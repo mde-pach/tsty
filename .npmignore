@@ -1,0 +1,17 @@
+# Development files
+examples/
+.next/
+node_modules/
+*.log
+
+# Source files (we want to include src/ for types)
+# But exclude specific directories
+.qa-testing/
+
+# Config files
+tsconfig.json
+tailwind.config.js
+postcss.config.js
+
+# Documentation
+PROJECT_STRUCTURE.md

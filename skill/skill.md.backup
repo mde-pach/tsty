@@ -1,0 +1,834 @@
+---
+name: tsty
+description: "Autonomous E2E testing framework for iterative visual QA and user flow validation. Creates, executes, and autonomously fixes test flows until passing. Use when asked to: (1) test/verify/validate UI, frontend, web app, or pages; (2) check layout, visual bugs, styling, or design; (3) test accessibility/WCAG/a11y; (4) run E2E/integration/user flow/journey/scenario tests; (5) test form submissions, interactions, or user actions; (6) verify API integrations from frontend; (7) regression test after changes; (8) debug/troubleshoot UI issues; (9) analyze screenshots, console logs, or test reports; (10) automate browser testing with Playwright. Works with ANY tech stack (React, Vue, Next.js, vanilla JS, etc.). CRITICAL: Autonomously iterates (run → analyze → fix code → re-run) until tests pass. Uses micro-iteration (test ONE step at a time) and fail-fast mode for fastest debugging."
+---
+
+# Tsty - Iterative Visual QA Testing Skill
+
+**Iterative QA testing framework** that autonomously creates flows, runs tests, analyzes results (screenshots/logs/reports), fixes issues, and re-runs until tests pass.
+
+## ⭐ Core Principle: Autonomous Iterative Testing
+
+**Tsty's PRIMARY PURPOSE is autonomous, iterative E2E testing:**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  YOU ARE THE TESTER AND THE FIXER                            │
+│  Don't just report failures - FIX them and verify fixes work │
+└──────────────────────────────────────────────────────────────┘
+
+1. CREATE flow → 2. RUN flow → 3. ANALYZE all (report + screenshots + logs + assertions)
+→ 4. FIX issues → 5. RE-RUN → 6. REPEAT until exit code 0
+```
+
+**CRITICAL REQUIREMENTS:**
+- **DO** iterate autonomously until tests pass
+- **DO** analyze all data sources (report + screenshots + logs + assertions)
+- **DO** fix issues immediately without waiting for user
+- **DON'T** stop after one run or just report issues
+
+→ **See [references/ITERATIVE-WORKFLOW.md](references/ITERATIVE-WORKFLOW.md) for detailed iteration guidance.**
+
+### 🎯 Skeptical Testing Mindset
+
+**Green checkmarks don't mean success if the outcome is wrong.**
+
+```
+❌ NAIVE: "Test passed → Success!"
+✅ SKEPTICAL: "Test passed → Does the outcome make sense?"
+```
+
+**After EVERY step, verify the FUNCTIONAL OUTCOME:**
+
+1. **Did the UI change as expected?** (compare before/after screenshots)
+2. **Did the data update correctly?** (check file contents, not just existence)
+3. **Is the result functional and usable?** (can the artifact actually be used?)
+
+**If answer is "no" to ANY question:**
+- STOP the current flow
+- Investigate why (see Investigation Protocol below)
+- Report issue or fix bug
+- Re-test until outcome is correct
+
+**Real Example - False Success:**
+```
+Test: User creates resource via UI
+All steps: PASSED ✓
+File created: YES ✓
+Assertions: PASSED ✓
+
+# Skeptical check:
+View created file → Content is EMPTY
+View screenshot → UI looks UNCHANGED
+Compare before/after → NO DIFFERENCE
+
+# Conclusion: Test mechanics worked, but FEATURE didn't
+# The goal wasn't achieved despite passing checks
+```
+
+**Success = Correct functional outcome, not just passing assertions**
+
+## 🚀 Micro-Iteration: THE ONLY WAY TO BUILD FLOWS
+
+**CRITICAL: Test ONE action before creating the next. Never create multiple untested actions.**
+
+```
+❌ NEVER DO THIS:
+1. Create 9 actions
+2. Create 9-step flow
+3. Run → 8 fail
+4. Waste 30+ minutes debugging
+
+✅ ALWAYS DO THIS:
+1. Create 1 action
+2. Test in 2-step flow (15s)
+3. If fail: Fix immediately
+4. If pass: Create next action
+5. Repeat
+```
+
+**The Iron Rule:** If you have more than 1 untested action, you're doing it wrong.
+
+**The Pattern:**
+
+```bash
+# Action 1
+echo '...' > .tsty/actions/action1.json
+tsty run test-action1 --fail-fast  # 2-step flow: navigate + action1
+# Exit 0? → Continue
+# Exit 1? → Fix, re-run
+
+# Action 2 (only after action1 works)
+echo '...' > .tsty/actions/action2.json
+tsty run test-action2 --fail-fast  # 3-step flow: navigate + action1 + action2
+# Exit 0? → Continue
+# Exit 1? → Fix, re-run
+
+# Continue until all actions validated
+```
+
+**Time savings:**
+- Traditional: 30-60 min (create all → test all → debug all)
+- Micro-iteration: 5-10 min (create → test → fix → repeat)
+
+**Why faster:**
+- Catch errors in 15s, not 90s
+- Fix once (root cause), not repeatedly (cascading failures)
+- Build on validated actions (no breaking existing steps)
+
+→ **See [references/ITERATIVE-WORKFLOW.md](references/ITERATIVE-WORKFLOW.md) for complete micro-iteration guide.**
+
+## 👤 Test Like a Human User (CRITICAL)
+
+**MOST IMPORTANT: Interact with the app the way a human user would.**
+
+```
+Before writing any test interaction, ask:
+"How would a human user do this?"
+Then do exactly that.
+```
+
+### Interaction Hierarchy (Try in Order)
+
+1. **Simple click** (99% of cases)
+   - `{ "type": "click", "selector": "text=Submit" }`
+   - `{ "type": "click", "selector": "text=Focus" }` ← NOT complex selectors!
+
+2. **Type/fill in inputs** (for forms)
+   - `{ "type": "fill", "selector": "placeholder=Email", "value": "test@example.com" }`
+
+3. **Keyboard shortcuts** (if user would use them)
+   - `{ "type": "press", "key": "Enter" }`
+
+4. **Drag and drop** (ONLY if clicking doesn't work first)
+   - Try click BEFORE assuming drag is needed
+
+5. **JavaScript evaluate** (LAST RESORT - usually means there's a bug to fix!)
+
+### Selector Simplicity
+
+**ALWAYS try simple selectors first:**
+
+```json
+✅ GOOD:
+"text=Submit"              // How humans identify elements
+"placeholder=Email"        // Visible attributes
+"button:has-text('Save')"  // Simple + text
+
+❌ BAD (Don't start with these):
+"div:has-text('Focus'):has-text('Focus an element')"  // Too complex!
+"div.container > div:nth-child(3)"  // Fragile, not user-like
+```
+
+**Golden Rule: If a human can see text and click it, use `text=` selector.**
+
+→ **See [references/USER-FIRST-TESTING.md](references/USER-FIRST-TESTING.md) for complete guide.**
+
+## 🔧 Fix Bugs, Don't Work Around Them (CRITICAL)
+
+**When features don't work: INVESTIGATE and FIX the bug, don't assume limitations.**
+
+### The 3-Question Triage
+
+1. **Is it a test issue?** (wrong selector, timing) → Fix the test
+2. **Is it an app bug?** (missing handler, broken logic) → **FIX THE APP**
+3. **Is it a framework limitation?** (very rare!) → Document + alternative
+
+### Default Assumption
+
+```
+99% of failures are due to:
+├─ 70% Application bugs (missing onClick, wrong logic)
+├─ 25% Wrong test selectors
+├─ 4% Timing issues
+└─ 1% Framework limitations
+
+DEFAULT: It's an app bug until proven otherwise.
+```
+
+### When Tests Pass But Feature Doesn't Work (FALSE SUCCESS)
+
+**MANDATORY INVESTIGATION:**
+
+```
+1. Test passed ✓ BUT screenshot shows no change ✗
+2. STOP - This is a FALSE SUCCESS
+3. Read the component code
+4. Find the bug (missing handler, wrong logic)
+5. Fix the bug in application code
+6. Re-run test
+7. Verify fix worked
+```
+
+**NEVER accept "test passed" if the outcome is wrong!**
+
+### Real Example from Testing Session
+
+```
+❌ WRONG (What NOT to do):
+- Tried: click primitive with complex selector
+- Tried: dragAndDrop
+- Both "passed" but primitive not added
+- Concluded: "Playwright/@dnd-kit incompatibility"
+- Gave up, tried workarounds
+
+✅ RIGHT (What TO do):
+- Tried: Simple click `text=Focus`
+- Test passed but no effect (FALSE SUCCESS)
+- Read: PrimitiveActionPalette.tsx
+- Found: No onClick handler, only useDraggable
+- Fixed: Added onClick handler to card
+- Re-tested: Now works!
+- Result: Bug fixed, feature works
+```
+
+→ **See [references/BUG-FIXING-WORKFLOW.md](references/BUG-FIXING-WORKFLOW.md) for complete workflow.**
+
+## 🎯 E2E Testing: HTML-First Approach (FASTEST)
+
+**CRITICAL: Extract HTML for exact selectors (10x faster than screenshot analysis).**
+
+```
+❌ SLOW: Screenshot → Guess selectors → Test → Wrong → Retry (5-10 min)
+
+✅ FAST: HTML → Copy selectors → Test → Works first try (1-2 min)
+```
+
+**The Pattern:**
+
+1. **Capture HTML** (15s) - Run discovery flow with `capture: { html: true }`
+2. **Extract selectors** (30s) - Read HTML from report, find data-testid/placeholders/names
+3. **Create action** (30s) - Use exact selectors from HTML
+4. **Test immediately** (20s) - Verify it works
+5. **Repeat** - One action at a time
+
+**Example:**
+
+```bash
+# 1. Discovery (15s)
+echo '{"name":"discover","steps":[{"name":"Capture","url":"http://localhost:4000/actions","capture":{"html":true,"screenshot":true}}]}' > .tsty/flows/discover.json
+tsty run discover --fail-fast
+
+# 2. Extract HTML (read from report)
+cat .tsty/reports/flow-discover-*.json | jq '.steps[0].html'
+# See: <button data-action="create">New Action</button>
+
+# 3. Create action with EXACT selector
+echo '{"type":"interaction","description":"Click create","primitives":[{"type":"click","selector":"[data-action='create']"}]}' > .tsty/actions/click-create.action.json
+
+# 4. Test (20s) - Works first try!
+```
+
+**Fallback to screenshot only if:**
+- HTML not captured in report
+- Visual layout analysis needed (spacing, colors)
+- Accessibility review required
+
+**Core Principles:**
+1. **HTML First** - Extract exact selectors, never guess
+2. **Validate Incrementally** - Test one action at a time (micro-iteration)
+3. **Fail Fast** - Stop immediately on console errors
+4. **No URL Reset** - Omit `url` field to stay on current page
+5. **User-Perspective Selectors** - Use `:has-text()`, `placeholder`, `aria-label` (not obscure classes)
+
+→ **See [references/E2E-TESTING-GUIDE.md](references/E2E-TESTING-GUIDE.md) for complete guide.**
+
+## 🚀 Prerequisites: ALWAYS Initialize First
+
+**⚠️ CRITICAL: Before anything, initialize:**
+
+```bash
+tsty init  # Creates .tsty/ directory with config, subdirectories
+```
+
+**If you see "No configuration file found"** → Run `tsty init` first.
+
+## 🎯 Quick Start
+
+### Choose Workflow
+
+**CLI-Only (Recommended for Autonomous Testing)**
+- Create flows as JSON in `.tsty/flows/`
+- Run via CLI: `tsty run flow-name --fail-fast`
+- Fastest iteration for autonomous fixing
+
+**Dashboard (For Interactive Editing)**
+- Start: `tsty` → http://localhost:4000
+- Visual flow builder with drag-and-drop
+- Still iterate: run → fix → re-run
+
+**Tsty tests ANY web application** - your apps, third-party sites, local servers, etc.
+
+### CLI Workflow
+
+```bash
+tsty init                                    # 1. Initialize
+# Create .tsty/flows/my-test.json            # 2. Create flow (see Flow Structure or use templates)
+tsty run my-test --fail-fast                 # 3. Run
+cat .tsty/reports/flow-my-test-*.json        # 4. Analyze report
+ls .tsty/screenshots/run-my-test-*/          # 5. View screenshots
+# Fix issues                                 # 6. Fix code
+tsty run my-test                             # 7. Re-run
+# Repeat until exit code 0
+```
+
+**⚡ FASTEST: Use flow templates** (don't write from scratch):
+
+Available in skill's `assets/templates/`:
+- **`discovery-flow.json`** - HTML capture for new pages (MOST IMPORTANT - use first!)
+- **`micro-iteration-flow.json`** - Test single action incrementally
+- **`login-flow.json`** - Authentication flow pattern
+- **`form-flow.json`** - Form submission pattern
+- **`navigation-flow.json`** - Multi-page journey
+
+**How to use**:
+1. Copy template from skill assets to `.tsty/flows/`
+2. Replace `TEMPLATE_*` placeholders (TEMPLATE_BASE_URL, TEMPLATE_PATH, etc.)
+3. Run immediately with `tsty run <flow-name> --fail-fast`
+
+**Example**:
+```bash
+# Start with discovery to capture HTML (15s)
+# Template path: ~/.claude/skills/tsty-skill/assets/templates/discovery-flow.json
+# Copy, edit placeholders, run
+```
+
+Templates save 5-10 minutes vs. writing flows from scratch.
+
+### Dashboard Workflow
+
+```bash
+tsty init                     # 1. Initialize
+tsty                          # 2. Start dashboard
+# http://localhost:4000       # 3. Open browser
+# Create flow visually        # 4. Build flow
+# Run from dashboard          # 5. Execute
+# Fix code                    # 6. Fix issues
+# Re-run from dashboard       # 7. Iterate
+```
+
+## ⚡ CRITICAL: Console-First Pattern
+
+**ALWAYS check console BEFORE continuing to next step.**
+
+```bash
+# After EVERY navigation step:
+1. Run step
+2. Check report: steps[N].consoleErrors
+3. If > 0: STOP, fix code, re-run
+4. If = 0: Continue to next step
+```
+
+**Why:** JavaScript errors prevent all future steps from working. Detecting them in 15s vs 90s saves 75s per iteration.
+
+**Example:**
+```bash
+tsty run discover-page --fail-fast
+# Check report immediately: cat .tsty/reports/flow-discover-*.json | grep consoleErrors
+# If "consoleErrors": 1 → STOP, fix code bug
+# If "consoleErrors": 0 → Continue building flow
+```
+
+→ **See [references/VERIFICATION-CHECKLIST.md](references/VERIFICATION-CHECKLIST.md) for step-by-step validation.**
+
+## CLI Commands
+
+→ **See [references/CLI-REFERENCE.md](references/CLI-REFERENCE.md) for complete reference.**
+
+**Essential commands:**
+
+```bash
+tsty init                               # Initialize project
+tsty run <flow> --fail-fast             # Run with fail-fast (saves 60-78% time)
+tsty run <flow> --device mobile         # Run with device preset
+tsty list                               # List flows
+tsty list actions                       # List user-created actions
+tsty primitives                         # List 48 primitives
+tsty primitives mouse                   # List mouse primitives
+tsty                                    # Start dashboard
+```
+
+## Core Workflow: Autonomous Iteration
+
+### Phase 0: Prerequisites
+
+```bash
+ls -la .tsty/       # Verify .tsty/ exists
+tsty init           # If missing, initialize
+```
+
+### Phase 1: Setup & Run
+
+**Create flow** (CLI or dashboard) → **Run**: `tsty run my-test --fail-fast`
+
+**Check status**:
+- Exit 0 = passed ✓
+- Exit 1 = failed → proceed to analysis
+- Report: `.tsty/reports/flow-my-test-{timestamp}.json`
+- Screenshots: `.tsty/screenshots/run-my-test-{timestamp}/`
+
+### Phase 2: Analysis (CRITICAL)
+
+**CRITICAL FIRST QUESTION: Did the outcome make sense?**
+
+Before analyzing technical details, verify the FUNCTIONAL OUTCOME:
+
+**Outcome Verification Checklist:**
+- [ ] Does the screenshot show the expected UI change?
+- [ ] Is the created file/data functional (not just exists)?
+- [ ] Would a real user be satisfied with this result?
+- [ ] Did EVERY step achieve its intended outcome?
+
+**If ANY checkbox is unchecked → STOP and use Investigation Protocol (see below)**
+
+**Example - Catching False Success:**
+```
+Test mechanics: ALL PASSED ✓
+Steps executed: ALL ✓
+Assertions: ALL ✓
+
+But skeptical check reveals:
+→ Created file is EMPTY (expected data missing)
+→ Screenshot looks IDENTICAL to before (no visual change)
+→ User would see NO RESULT from this action
+
+Conclusion: FALSE SUCCESS - test ran but feature didn't work
+```
+
+**Then analyze ALL data sources:**
+
+→ **See [references/ANALYSIS-METHODS.md](references/ANALYSIS-METHODS.md) for complete guide.**
+
+**Quick checklist:**
+
+1. **Report** (`.tsty/reports/`):
+   - `success: false` → failed
+   - `error` → root cause
+   - `stoppedEarly` / `stopReason` → why stopped
+   - `steps[].console` → JS errors
+   - `steps[].consoleErrors` → error count
+
+2. **Screenshots** (`.tsty/screenshots/run-*/`):
+   - Read EACH: `1-step.png`, `2-step.png`, etc.
+   - Look for: layout bugs, visual issues, accessibility
+   - Use two-tier: Critical Issues + UX Improvements
+
+3. **Console Logs** (`steps[].console`):
+   - JS errors → fix code
+   - Network failures → check APIs
+
+4. **Assertions** (`steps[].assertions`):
+   - Failed → verify selectors
+
+### Phase 3: Fix & Re-run (ITERATE)
+
+**Identify what to fix:**
+- **Console errors** → Fix **application code** (JS bugs in .tsx/.ts/.jsx/.js files)
+- **Selector timeouts** → Fix **test selectors** (wrong selector in flow/action JSON)
+- **Failed assertions** → Fix **test assertions** or **app behavior**
+- **Visual bugs** → Fix **application code** (CSS/layout in .css/.tsx files)
+- **Missing elements** → Fix **application code** (component rendering)
+
+**Apply fixes:**
+1. Use Read tool to examine relevant files
+2. Use Edit tool to fix issues
+3. Re-run: `tsty run my-test --fail-fast`
+4. Repeat Phase 2 (analyze)
+5. Continue until: exit 0, screenshots correct, no errors
+
+**Critical:** Always fix application bugs (console errors, visual issues) by editing the app's source code, not by changing the test.
+
+→ **See [QUICK-DECISIONS.md](references/QUICK-DECISIONS.md) for decision trees.**
+→ **See [ITERATIVE-WORKFLOW.md](references/ITERATIVE-WORKFLOW.md) for detailed patterns.**
+
+### Phase 4: Confirmation
+
+Summarize what was tested, list fixes, confirm working, suggest next tests.
+
+## 🔍 Investigation Protocol: When Features Don't Work as Expected
+
+**Use this when outcome verification fails (UI unchanged, file empty, feature broken).**
+
+### Red Flags (STOP and Investigate)
+
+When you see ANY of these, STOP the current path and investigate:
+
+🚩 **UI Red Flags:**
+- Expected visual change didn't happen (screenshot looks the same)
+- User action had no visible effect (clicked button, nothing changed)
+- Element exists but interaction does nothing
+- Transition/navigation didn't occur
+
+🚩 **Data Red Flags:**
+- File created but missing expected content (`primitives: []`, empty arrays)
+- Saved data doesn't match what was entered
+- Created artifact is unusable/incomplete
+- Counts/badges don't update (still shows "0 actions" after adding one)
+
+🚩 **Behavior Red Flags:**
+- Assertion passed but screenshot looks wrong
+- Multiple selectors for "same" element all fail
+- No console errors but feature clearly broken
+- Different interaction approaches all fail
+
+### Investigation Method (6 Steps)
+
+**Step 1: Gather Evidence**
+- Screenshot before action
+- Screenshot after action
+- Console logs from test report
+- Error messages from test output
+- File contents (if created)
+
+**Step 2: Compare Expected vs Actual**
+- Expected: What should happen from user's perspective
+- Actual: What the screenshot/data actually shows
+- Gap: The feature didn't produce the expected result
+
+**Step 3: Form Hypotheses** (Always include "app bug" as a hypothesis!)
+```
+1. Wrong selector? → Try: text=, placeholder=, aria-label
+2. Timing issue? → Try: waitForTimeout, waitForLoadState
+3. Wrong interaction? → Try: click before drag, fill before evaluate
+4. App bug? → READ CODE to find missing handler/logic
+```
+
+**IMPORTANT:** Always try simple user-like interaction FIRST:
+- Click before drag
+- `text=` before complex selectors
+- Fill before evaluate
+
+**Step 4: Test Simple User Interaction First**
+```json
+// ALWAYS start with the simplest user action
+{ "type": "click", "selector": "text=Focus" }
+// NOT:
+{ "type": "dragAndDrop", "source": "...", "target": "..." }
+```
+
+If simple interaction doesn't work → It's likely an app bug!
+
+**Step 5: Read the Code (MANDATORY if simple interaction fails)**
+```bash
+# Find the component
+grep -r "Focus an element" src/
+
+# Read the component file
+cat src/dashboard/components/.../component.tsx
+
+# Look for event handlers
+# - onClick? onDrag? onChange?
+# - Are handlers missing?
+# - Is logic broken?
+```
+
+**Step 6: Fix the Bug (DEFAULT ACTION)**
+
+**DEFAULT: Fix the bug yourself. Don't report unless truly blocked.**
+
+**When to FIX (90% of cases):**
+- Missing event handler (onClick, onChange, onDrag)
+- Wrong selector in test
+- Timing issue (add wait)
+- Broken logic in handler
+- Missing form attributes
+
+**How to Fix:**
+1. Identify the bug in code
+2. Fix the application code (add handler, fix logic)
+3. Re-run test
+4. Verify fix worked
+
+**When to REPORT (10% of cases):**
+- Architectural decision needed
+- Breaking changes required
+- Third-party library bug (truly confirmed)
+- Complex refactoring beyond scope
+
+**If Reporting (rare):**
+```
+I'm trying to [action] but it's not working. Evidence:
+
+1. **Expected:** [what should happen from user's perspective]
+2. **Actual:** [what actually happened - reference screenshot]
+3. **Tried:**
+   - Approach 1: [selector/interaction] - [result]
+   - Approach 2: [alternative] - [result]
+   - Approach 3: [another alternative] - [result]
+4. **Console errors:** [yes/no, details if any]
+5. **Screenshots:**
+   - Before: [path]
+   - After: [path] (describe what's visible/missing)
+6. **File/Data state:**
+   - Expected: [what should be there]
+   - Actual: [what is there]
+7. **Hypothesis:** [What you think is wrong and why]
+
+Should I investigate the code to fix this, or work around it?
+```
+
+**What NOT to Do:**
+- ❌ Skip the feature and pretend success ("test passed" but feature didn't work)
+- ❌ Report after trying only one approach (try multiple first)
+- ❌ Continue testing broken features (fix or escalate first)
+- ❌ Assume test framework is broken (usually app issue)
+
+→ **See [references/REPORTING-ISSUES.md](references/REPORTING-ISSUES.md) for detailed reporting template.**
+
+## 🚨 STOP or CONTINUE? Immediate Decision Tree
+
+**After EVERY test run:**
+
+```
+Exit code 0?
+├─ YES → View screenshots → Issues? → Note as UX improvements → DONE
+└─ NO → consoleErrors > 0?
+   ├─ YES → 🚨 FIX APP CODE (JS bug) → Re-run
+   └─ NO → Selector timeout?
+      ├─ YES → Check screenshot → Fix selector or app → Re-run
+      └─ NO → Read error → Fix → Re-run
+```
+
+**Key principles:**
+- **Console errors** = Fix **app code** (JavaScript bugs)
+- **Selector errors** = Fix **test selectors** (wrong selector)
+- **Exit 0 + screenshots OK** = DONE (create next test)
+
+→ **See [QUICK-DECISIONS.md](references/QUICK-DECISIONS.md) for complete decision trees.**
+→ **See [VERIFICATION-CHECKLIST.md](references/VERIFICATION-CHECKLIST.md) for step-by-step validation.**
+
+## Workflow Approaches
+
+→ **See [DASHBOARD.md](references/DASHBOARD.md) for detailed workflow comparison and dashboard features.**
+
+**CLI-Driven** (Recommended): JSON files → CLI execution → Fastest iteration
+**Dashboard**: Visual builder → Interactive editing → Real-time viewer
+**Hybrid**: Create visually, iterate via CLI for speed
+
+## Fail-Fast Mode & Console Monitoring
+
+**Stops on first failure, saving 60-78% time.**
+
+```bash
+tsty run my-flow --fail-fast      # Enable (recommended)
+tsty run my-flow --no-monitor     # Disable console monitoring
+```
+
+**In flow JSON:** `{ "failFast": true, "monitorConsole": true }`
+
+→ **See [FAIL-FAST-GUIDE.md](references/FAIL-FAST-GUIDE.md) for complete details.**
+
+## Flow Structure
+
+**Minimal example:**
+
+```json
+{
+  "name": "Test",
+  "baseUrl": "http://localhost:3000",
+  "failFast": true,
+  "steps": [{
+    "name": "Homepage",
+    "url": "/",
+    "capture": { "screenshot": true },
+    "primitives": [{ "type": "click", "selector": "button" }]
+  }]
+}
+```
+
+**Key fields:** `url` (navigate), `primitives` (actions), `expectedUrl` (verify), `capture` (screenshots/HTML)
+
+→ **See [FLOW-STRUCTURE.md](references/FLOW-STRUCTURE.md) for complete schema.**
+
+## 48 Playwright Primitives
+
+→ **See [ACTIONS.md](references/ACTIONS.md) for complete primitive reference and examples.**
+
+**Primitives** are framework-provided building blocks (auto-generated from Playwright).
+**Actions** are user-created behaviors (composed from primitives).
+
+**48 primitives across 7 categories**: Navigation (5), Mouse (5), Input (8), Waiting (6), Locators (7), Info (4), Other (13)
+
+```bash
+tsty primitives           # List all 48 primitives
+tsty primitives mouse     # List by category
+```
+
+## Variable Interpolation
+
+→ **See [references/VARIABLES.md](references/VARIABLES.md) for complete reference.**
+
+**Syntax:** `${variable}`
+
+**Built-in:** `${timestamp}`, `${datetime}`, `${baseUrl}`, `${credentials.email}`
+
+**Faker.js (300+):**
+```
+${faker.person.fullName}
+${faker.internet.email}
+${faker.location.city}
+${faker.company.name}
+${faker.lorem.sentence}
+```
+
+## Configuration
+
+→ **See [references/CONFIG.md](references/CONFIG.md) for complete guide.**
+
+`.tsty/config.json`:
+
+```json
+{
+  "baseUrl": "http://localhost:3000",
+  "credentials": { "email": "test@example.com", "password": "pass" },
+  "playwright": { "headless": true, "timeout": 30000 }
+}
+```
+
+## Troubleshooting
+
+**Common issues:**
+- "No configuration file" → Run `tsty init`
+- Port conflict → `tsty --port 3001`
+- Flow not found → Check `tsty list` or `ls .tsty/flows/`
+- Playwright not installed → `npx playwright install chromium`
+- Timeout errors → Check selectors and page load state
+
+**Note:** Playwright launches isolated browser instances. Dev server must be running before tests.
+
+→ **See [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) for complete guide.**
+
+## Reference Documentation
+
+**Load as needed for detailed information.**
+
+### 🎯 Core Workflows (Read First)
+
+- **[ITERATIVE-WORKFLOW.md](references/ITERATIVE-WORKFLOW.md)** - ⭐ CRITICAL: Iteration loop with examples
+- **[E2E-TESTING-GUIDE.md](references/E2E-TESTING-GUIDE.md)** - ⭐ CRITICAL: HTML-first approach
+- **[VERIFICATION-CHECKLIST.md](references/VERIFICATION-CHECKLIST.md)** - ⭐ CRITICAL: Step-by-step validation
+- **[ANALYSIS-METHODS.md](references/ANALYSIS-METHODS.md)** - Analyzing reports/screenshots/logs
+
+### 📚 Technical References
+
+- **[FLOW-STRUCTURE.md](references/FLOW-STRUCTURE.md)** - Flow JSON schema with examples
+- **[ACTIONS.md](references/ACTIONS.md)** - 48 Playwright primitives
+- **[VARIABLES.md](references/VARIABLES.md)** - Variable interpolation & Faker.js
+- **[CONFIG.md](references/CONFIG.md)** - Configuration options
+- **[CLI-REFERENCE.md](references/CLI-REFERENCE.md)** - All CLI commands
+
+### 🎨 Features & Guides
+
+- **[DASHBOARD.md](references/DASHBOARD.md)** - Dashboard features
+- **[FAIL-FAST-GUIDE.md](references/FAIL-FAST-GUIDE.md)** - Fail-fast mode details
+- **[EXAMPLES.md](references/EXAMPLES.md)** - 11 real-world examples
+
+### 📐 Standards & Analysis
+
+- **[VISUAL-ANALYSIS-GUIDE.md](references/VISUAL-ANALYSIS-GUIDE.md)** - Visual analysis methodology
+- **[ANALYSIS-CHECKLIST.md](references/ANALYSIS-CHECKLIST.md)** - Quick checklist
+- **[accessibility-standards.md](references/accessibility-standards.md)** - WCAG AA standards
+- **[ux-production-analysis.md](references/ux-production-analysis.md)** - UX patterns
+- **[framework-fixes.md](references/framework-fixes.md)** - Framework-specific fixes
+- **[common-ux-issues.md](references/common-ux-issues.md)** - Common anti-patterns
+- **[layout-patterns.md](references/layout-patterns.md)** - Layout best practices
+
+### 🛠️ For Maintainers
+
+- **[DESIGN-PHILOSOPHY.md](references/DESIGN-PHILOSOPHY.md)** - Design principles & extension guidelines
+
+### When to Read
+
+- **Before first test**: ITERATIVE-WORKFLOW.md, E2E-TESTING-GUIDE.md, VERIFICATION-CHECKLIST.md
+- **After EVERY step**: VERIFICATION-CHECKLIST.md (critical for fast iteration)
+- **After first run**: ANALYSIS-METHODS.md
+- **Creating flows**: FLOW-STRUCTURE.md, EXAMPLES.md, VARIABLES.md
+- **When stuck**: ITERATIVE-WORKFLOW.md, VERIFICATION-CHECKLIST.md, troubleshooting above
+- **For features**: CLI-REFERENCE.md, DASHBOARD.md, FAIL-FAST-GUIDE.md
+- **For extending**: DESIGN-PHILOSOPHY.md
+
+## When to Use This Skill
+
+**Auto-trigger (proactive):**
+- User implements UI features → Test with Tsty
+- User updates pages → Verify no regressions
+- User makes layout changes → Check visual correctness
+
+**Explicit requests:**
+- "Test the dashboard visually"
+- "Check accessibility"
+- "Run E2E tests"
+- "Find layout issues"
+
+**Proactive suggestions:**
+- User: "Added modal" → You: "Let me test it"
+- User: "Updated layout" → You: "I'll run regression tests"
+
+## Key Principles
+
+### Technical
+- **Directory**: `.tsty/` (legacy `.qa-testing/` supported)
+- **Commands**: `tsty` or `npx qa` (never run scripts directly)
+- **Primitives**: 48 auto-generated from Playwright's Page API
+- **Actions**: User-created behaviors composed from primitives
+- **Variables**: Faker.js for dynamic data (300+)
+- **Screenshots**: `run-{flowId}-{timestamp}/` per run
+
+### Workflow
+- **ITERATE**: Run → Analyze → Fix → Re-run (don't stop after one run)
+- **ANALYZE ALL**: Reports + screenshots + logs + assertions
+- **FIX AUTONOMOUSLY**: Apply fixes immediately
+- **VERIFY FIXES**: Always re-run after fixes
+
+### Analysis
+- **Visible only**: Analyze what's in screenshots/logs
+- **Priority**: Errors → Critical bugs → Assertions → Visual → UX
+- **Two-tier**: Critical issues + UX improvements
+- **Concise**: 1-2 lines per issue
+
+## Framework Info
+
+- **Package**: `@vipro/qa-framework`
+- **GitHub**: https://github.com/mde-pach/tsty
+- **Playwright**: https://playwright.dev
+- **Faker.js**: https://fakerjs.dev/api/
