@@ -24,7 +24,7 @@ These example actions demonstrate the capabilities of the action system. They ar
 
 1. **Review examples** to understand action structure and capabilities
 2. **Adapt to your project** by updating selectors and values
-3. **Save in project** at `.qa-testing/actions/` in your project
+3. **Save in project** at `.tsty/actions/` in your project
 4. **Test action** works with your UI
 5. **Commit to repo** for team reuse
 

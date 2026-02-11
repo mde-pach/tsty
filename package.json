@@ -1,11 +1,11 @@
 {
-	"name": "@vipro/qa-framework",
+	"name": "@vipro/tsty",
 	"version": "0.1.0",
-	"description": "Standalone visual QA testing dashboard with Playwright",
+	"description": "Tsty - Visual testing framework with Playwright",
 	"main": "src/index.ts",
 	"types": "src/index.ts",
 	"bin": {
-		"qa-framework": "./bin/cli.js",
+		"tsty": "./bin/cli.js",
 		"qa": "./bin/cli.js"
 	},
 	"files": [

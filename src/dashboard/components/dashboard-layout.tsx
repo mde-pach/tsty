@@ -155,12 +155,12 @@ export function DashboardLayout({
 					>
 						<div className="flex items-center gap-3">
 							<div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
-								<span className="text-white font-bold text-sm">QA</span>
+								<span className="text-white font-bold text-sm">T</span>
 							</div>
 							{!isDesktopSidebarCollapsed && (
 								<div className="min-w-0 flex-1">
 									<h2 className="font-semibold text-gray-900 dark:text-white truncate">
-										QA Framework
+										Tsty
 									</h2>
 									<p className="text-xs text-gray-500 dark:text-gray-400 truncate">
 										Testing Dashboard

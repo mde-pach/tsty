@@ -1,11 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
-import type { QAFrameworkConfig } from "./types";
+import type { TstyConfig } from "./types";
 
 /**
- * Default configuration for the QA Framework
+ * Default configuration for Tsty
  */
-export const defaultConfig: Partial<QAFrameworkConfig> = {
+export const defaultConfig: Partial<TstyConfig> = {
 	testDir: "./.tsty",
 	playwright: {
 		headless: true,
@@ -23,7 +23,7 @@ export const defaultConfig: Partial<QAFrameworkConfig> = {
  * Load configuration from the host project
  * Looks for qa.config.js or qa.config.json in the project root
  */
-export function loadConfig(projectRoot?: string): QAFrameworkConfig {
+export function loadConfig(projectRoot?: string): TstyConfig {
 	// Use QA_PROJECT_ROOT env var set by CLI, or provided projectRoot, or CWD
 	const root = projectRoot || process.env.QA_PROJECT_ROOT || process.cwd();
 
@@ -48,15 +48,6 @@ export function loadConfig(projectRoot?: string): QAFrameworkConfig {
 		return mergeConfig(testConfig);
 	}
 
-	// Fallback: Try old .qa-testing/config.json for backward compatibility
-	const legacyTestConfigPath = path.join(root, ".qa-testing", "config.json");
-	if (fs.existsSync(legacyTestConfigPath)) {
-		const testConfig = JSON.parse(
-			fs.readFileSync(legacyTestConfigPath, "utf-8"),
-		);
-		return mergeConfig(testConfig);
-	}
-
 	throw new Error(
 		"No configuration file found. Please create qa.config.js, qa.config.json, or .tsty/config.json",
 	);
@@ -66,8 +57,8 @@ export function loadConfig(projectRoot?: string): QAFrameworkConfig {
  * Merge user config with defaults and compute derived paths
  */
 function mergeConfig(
-	userConfig: Partial<QAFrameworkConfig>,
-): QAFrameworkConfig {
+	userConfig: Partial<TstyConfig>,
+): TstyConfig {
 	const config = {
 		...defaultConfig,
 		...userConfig,
@@ -79,7 +70,7 @@ function mergeConfig(
 			...defaultConfig.viewports,
 			...userConfig.viewports,
 		},
-	} as QAFrameworkConfig;
+	} as TstyConfig;
 
 	// Compute derived paths if not explicitly set
 	const testDir = config.testDir;
@@ -108,7 +99,7 @@ export function getAbsolutePath(
 /**
  * Ensure all required directories exist
  */
-export function ensureDirectories(config: QAFrameworkConfig): void {
+export function ensureDirectories(config: TstyConfig): void {
 	const dirs = [
 		config.testDir,
 		config.screenshotsDir,

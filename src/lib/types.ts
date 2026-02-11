@@ -1,6 +1,6 @@
 /**
- * Core type definitions for the QA Framework
- * Based on .qa-testing format
+ * Core type definitions for Tsty
+ * Based on .tsty format
  */
 
 // ============================================================================
@@ -222,7 +222,7 @@ export interface TestConfig {
   };
 }
 
-export interface QAFrameworkConfig {
+export interface TstyConfig {
   testDir: string;
   screenshotsDir: string;
   reportsDir: string;

@@ -1,5 +1,5 @@
 /**
- * CLI Commands for QA Framework
+ * CLI Commands for Tsty
  * Shared logic used by both CLI and API
  */
 

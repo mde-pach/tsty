@@ -3,20 +3,20 @@
  *
  * Usage in host project:
  *
- * // src/app/api/qa-testing/flows/route.ts
- * export { GET, POST, PUT, DELETE } from '@/qa-framework/api/flows';
+ * // src/app/api/tsty/flows/route.ts
+ * export { GET, POST, PUT, DELETE } from '@/tsty/api/flows';
  *
- * // src/app/api/qa-testing/actions/route.ts
- * export { GET, POST, PUT, DELETE } from '@/qa-framework/api/actions';
+ * // src/app/api/tsty/actions/route.ts
+ * export { GET, POST, PUT, DELETE } from '@/tsty/api/actions';
  *
- * // src/app/api/qa-testing/reports/route.ts
- * export { GET, DELETE } from '@/qa-framework/api/reports';
+ * // src/app/api/tsty/reports/route.ts
+ * export { GET, DELETE } from '@/tsty/api/reports';
  *
- * // src/app/api/qa-testing/run/route.ts
- * export { POST } from '@/qa-framework/api/run';
+ * // src/app/api/tsty/run/route.ts
+ * export { POST } from '@/tsty/api/run';
  *
- * // src/app/api/qa-testing/screenshots/route.ts
- * export { GET } from '@/qa-framework/api/screenshots';
+ * // src/app/api/tsty/screenshots/route.ts
+ * export { GET } from '@/tsty/api/screenshots';
  */
 
 export * as actions from "./actions";

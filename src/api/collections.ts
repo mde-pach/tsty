@@ -7,7 +7,7 @@ const fileManager = new FileManager();
 const collectionMatcher = new CollectionMatcher();
 
 /**
- * GET /api/qa-testing/collections
+ * GET /api/tsty/collections
  * List all collections or get flows for a specific collection
  */
 export async function GET(request: NextRequest) {
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/qa-testing/collections
+ * POST /api/tsty/collections
  * Create a new collection
  */
 export async function POST(request: NextRequest) {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * PUT /api/qa-testing/collections
+ * PUT /api/tsty/collections
  * Update an existing collection
  */
 export async function PUT(request: NextRequest) {
@@ -150,7 +150,7 @@ export async function PUT(request: NextRequest) {
 }
 
 /**
- * DELETE /api/qa-testing/collections?id=<collectionId>
+ * DELETE /api/tsty/collections?id=<collectionId>
  * Delete a collection
  */
 export async function DELETE(request: NextRequest) {

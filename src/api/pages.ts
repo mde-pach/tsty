@@ -6,7 +6,7 @@ const pageExtractor = new PageExtractor();
 const fileManager = new FileManager();
 
 /**
- * GET /api/qa-testing/pages/tree
+ * GET /api/tsty/pages/tree
  * Build page tree from all flows
  */
 export async function GET(request: NextRequest) {

@@ -6,7 +6,7 @@ const validator = new DependencyValidator();
 const fileManager = new FileManager();
 
 /**
- * POST /api/qa-testing/validate/dependencies
+ * POST /api/tsty/validate/dependencies
  * Validate dependencies for a flow or action
  */
 export async function POST(request: NextRequest) {
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/qa-testing/dependencies/graph?type=<flow|action>
+ * GET /api/tsty/dependencies/graph?type=<flow|action>
  * Get full dependency graph
  */
 export async function GET(request: NextRequest) {

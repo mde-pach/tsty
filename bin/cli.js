@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * QA Framework CLI
+ * Tsty CLI
  * Main entry point for all CLI commands
  */
 
@@ -26,7 +26,7 @@ function log(message, color = 'reset') {
 function printBanner() {
   log('\n╔═══════════════════════════════════════════╗', 'cyan');
   log('║                                           ║', 'cyan');
-  log('║         🧪 QA Framework CLI               ║', 'cyan');
+  log('║         🧪 Tsty CLI               ║', 'cyan');
   log('║                                           ║', 'cyan');
   log('╚═══════════════════════════════════════════╝\n', 'cyan');
 }
@@ -94,7 +94,7 @@ function startServer(args) {
 
   const frameworkDir = path.resolve(__dirname, '..');
 
-  log(`🚀 Starting QA Framework server...`, 'green');
+  log(`🚀 Starting Tsty server...`, 'green');
   log(`   URL: http://${host}:${port}\n`, 'cyan');
 
   // Determine which package manager to use
@@ -125,14 +125,14 @@ function startServer(args) {
     if (code !== 0) {
       log(`\n❌ Server exited with code ${code}`, 'red');
     } else {
-      log('\n👋 QA Framework stopped', 'blue');
+      log('\n👋 Tsty stopped', 'blue');
     }
     process.exit(code || 0);
   });
 
   // Handle SIGINT (Ctrl+C)
   process.on('SIGINT', () => {
-    log('\n\n⏹️  Stopping QA Framework...', 'yellow');
+    log('\n\n⏹️  Stopping Tsty...', 'yellow');
     nextProcess.kill('SIGINT');
   });
 

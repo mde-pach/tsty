@@ -25,7 +25,7 @@ The configuration file (`.tsty/config.json`) is automatically created by `tsty i
 - Playwright browser settings
 - Global defaults
 
-**Location**: `.tsty/config.json` (or legacy `.qa-testing/config.json`)
+**Location**: `.tsty/config.json`
 
 **Auto-created**: Run `tsty init` to generate default config
 

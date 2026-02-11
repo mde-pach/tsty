@@ -11,7 +11,7 @@ export function useTags() {
 	const fetchTags = async () => {
 		try {
 			setLoading(true);
-			const response = await fetch("/api/qa-testing/tags");
+			const response = await fetch("/api/tsty/tags");
 			const data: ApiResponse<Tag[]> = await response.json();
 
 			if (data.success && data.data) {
@@ -35,7 +35,7 @@ export function useTags() {
 		tag: Omit<Tag, "id" | "createdAt" | "updatedAt">,
 	) => {
 		try {
-			const response = await fetch("/api/qa-testing/tags", {
+			const response = await fetch("/api/tsty/tags", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(tag),
@@ -57,7 +57,7 @@ export function useTags() {
 
 	const updateTag = async (id: string, updates: Partial<Tag>) => {
 		try {
-			const response = await fetch("/api/qa-testing/tags", {
+			const response = await fetch("/api/tsty/tags", {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ id, ...updates }),
@@ -79,7 +79,7 @@ export function useTags() {
 
 	const deleteTag = async (id: string) => {
 		try {
-			const response = await fetch(`/api/qa-testing/tags?id=${id}`, {
+			const response = await fetch(`/api/tsty/tags?id=${id}`, {
 				method: "DELETE",
 			});
 
@@ -99,7 +99,7 @@ export function useTags() {
 	const getTagUsage = async (id: string): Promise<TagUsage> => {
 		try {
 			const response = await fetch(
-				`/api/qa-testing/tags?id=${id}&action=usage`,
+				`/api/tsty/tags?id=${id}&action=usage`,
 			);
 			const data: ApiResponse<TagUsage> = await response.json();
 

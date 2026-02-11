@@ -1,6 +1,6 @@
 # Common Action Examples
 
-This file contains examples of commonly used actions for the QA Framework.
+This file contains examples of commonly used actions for Tsty.
 
 ## Authentication
 

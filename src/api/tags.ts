@@ -7,7 +7,7 @@ const tagManager = new TagManager();
 const fileManager = new FileManager();
 
 /**
- * GET /api/qa-testing/tags
+ * GET /api/tsty/tags
  * List all tags or get tag usage
  */
 export async function GET(request: NextRequest) {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/qa-testing/tags
+ * POST /api/tsty/tags
  * Create a new tag
  */
 export async function POST(request: NextRequest) {
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * PUT /api/qa-testing/tags
+ * PUT /api/tsty/tags
  * Update an existing tag
  */
 export async function PUT(request: NextRequest) {
@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
 }
 
 /**
- * DELETE /api/qa-testing/tags?id=<tagId>
+ * DELETE /api/tsty/tags?id=<tagId>
  * Delete a tag
  */
 export async function DELETE(request: NextRequest) {

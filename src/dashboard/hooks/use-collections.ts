@@ -15,7 +15,7 @@ export function useCollections() {
 	const fetchCollections = async () => {
 		try {
 			setLoading(true);
-			const response = await fetch("/api/qa-testing/collections");
+			const response = await fetch("/api/tsty/collections");
 			const data: ApiResponse<CollectionWithCount[]> = await response.json();
 
 			if (data.success && data.data) {
@@ -39,7 +39,7 @@ export function useCollections() {
 		collection: Omit<SmartCollection, "id" | "createdAt" | "updatedAt">,
 	) => {
 		try {
-			const response = await fetch("/api/qa-testing/collections", {
+			const response = await fetch("/api/tsty/collections", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(collection),
@@ -64,7 +64,7 @@ export function useCollections() {
 		updates: Partial<SmartCollection>,
 	) => {
 		try {
-			const response = await fetch("/api/qa-testing/collections", {
+			const response = await fetch("/api/tsty/collections", {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ id, ...updates }),
@@ -86,7 +86,7 @@ export function useCollections() {
 
 	const deleteCollection = async (id: string) => {
 		try {
-			const response = await fetch(`/api/qa-testing/collections?id=${id}`, {
+			const response = await fetch(`/api/tsty/collections?id=${id}`, {
 				method: "DELETE",
 			});
 
@@ -106,7 +106,7 @@ export function useCollections() {
 	const getCollectionFlows = async (id: string): Promise<FlowFile[]> => {
 		try {
 			const response = await fetch(
-				`/api/qa-testing/collections?id=${id}&action=flows`,
+				`/api/tsty/collections?id=${id}&action=flows`,
 			);
 			const data: ApiResponse<FlowFile[]> = await response.json();
 

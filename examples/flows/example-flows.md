@@ -1,6 +1,6 @@
 # Example Test Flows
 
-This file contains examples of common test flow patterns for the QA Framework.
+This file contains examples of common test flow patterns for Tsty.
 
 ## Basic Smoke Test
 

@@ -100,7 +100,7 @@ If any answer is "no" → Investigate and fix the bug.
 
 2. **File Management** (`src/lib/`)
    - `file-manager.ts` - Read/write operations for `.tsty/` directory
-   - `config.ts` - Configuration loader with fallbacks (`.tsty/` or `.qa-testing/`)
+   - `config.ts` - Configuration loader for `.tsty/` directory
    - `types.ts` - TypeScript definitions (Flow, Action, Report, etc.)
    - `generated-actions.ts` - **48 auto-generated Playwright action types**
    - `variable-interpolator.ts` - **Dynamic variable system with Faker.js**
@@ -704,13 +704,9 @@ Example test flow in `.tsty/flows/e2e/`:
 3. Use `previewInterpolation()` for debugging
 4. Check config for missing credentials
 
-## Directory Migration (2026-02-05)
+## Directory Migration (Complete)
 
-**`.qa-testing` → `.tsty`**:
-- All references updated to use `.tsty`
-- Config loader still checks `.qa-testing` as fallback for backward compatibility
-- When updating, always use `.tsty` for new code
-- CLI commands reference `.tsty` in output
+The project directory was renamed from `.qa-testing` to `.tsty`. All references have been updated. The `.qa-testing` fallback has been removed from the config loader.
 
 ## Best Practices
 

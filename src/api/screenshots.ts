@@ -5,7 +5,7 @@ import { FileManager } from "../lib/file-manager";
 const fileManager = new FileManager();
 
 /**
- * GET /api/qa-testing/screenshots?filename=<filename>
+ * GET /api/tsty/screenshots?filename=<filename>
  * Serve a screenshot image
  */
 export async function GET(request: NextRequest) {

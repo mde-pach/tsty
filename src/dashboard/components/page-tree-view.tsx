@@ -29,7 +29,7 @@ export function PageTreeView({
 	const fetchTree = async () => {
 		try {
 			setLoading(true);
-			const response = await fetch("/api/qa-testing/pages/tree");
+			const response = await fetch("/api/tsty/pages/tree");
 			const data = await response.json();
 
 			if (data.success && data.data) {

@@ -5,7 +5,7 @@ import type { ActionDefinition } from "../lib/types";
 const fileManager = new FileManager();
 
 /**
- * GET /api/qa-testing/actions
+ * GET /api/tsty/actions
  * List all actions
  */
 export async function GET(request: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/qa-testing/actions
+ * POST /api/tsty/actions
  * Create a new action
  */
 export async function POST(request: NextRequest) {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * PUT /api/qa-testing/actions
+ * PUT /api/tsty/actions
  * Update an existing action
  */
 export async function PUT(request: NextRequest) {
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest) {
 }
 
 /**
- * DELETE /api/qa-testing/actions?id=<actionId>
+ * DELETE /api/tsty/actions?id=<actionId>
  * Delete an action
  */
 export async function DELETE(request: NextRequest) {

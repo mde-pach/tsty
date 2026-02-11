@@ -1,13 +1,13 @@
-# Integrating QA Framework with Next.js App Router
+# Integrating Tsty with Next.js App Router
 
-This guide shows how to integrate the QA Framework into a Next.js project using the App Router.
+This guide shows how to integrate Tsty into a Next.js project using the App Router.
 
 ## Step 1: Install the Framework
 
 ```bash
-npm install @vipro/qa-framework
+npm install @vipro/tsty
 # or
-bun add @vipro/qa-framework
+bun add @vipro/tsty
 ```
 
 ## Step 2: Create Configuration
@@ -16,7 +16,7 @@ Create `qa.config.js` in your project root:
 
 ```javascript
 module.exports = {
-  testDir: './.qa-testing',
+  testDir: './.tsty',
   baseUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   auth: {
     loginUrl: '/auth/login',
@@ -34,44 +34,44 @@ module.exports = {
 
 ## Step 3: Create API Routes
 
-### `src/app/api/qa-testing/flows/route.ts`
+### `src/app/api/tsty/flows/route.ts`
 ```typescript
-export { GET, POST, PUT, DELETE } from '@vipro/qa-framework/api/flows';
+export { GET, POST, PUT, DELETE } from '@vipro/tsty/api/flows';
 ```
 
-### `src/app/api/qa-testing/actions/route.ts`
+### `src/app/api/tsty/actions/route.ts`
 ```typescript
-export { GET, POST, PUT, DELETE } from '@vipro/qa-framework/api/actions';
+export { GET, POST, PUT, DELETE } from '@vipro/tsty/api/actions';
 ```
 
-### `src/app/api/qa-testing/reports/route.ts`
+### `src/app/api/tsty/reports/route.ts`
 ```typescript
-export { GET, DELETE } from '@vipro/qa-framework/api/reports';
+export { GET, DELETE } from '@vipro/tsty/api/reports';
 ```
 
-### `src/app/api/qa-testing/run/route.ts`
+### `src/app/api/tsty/run/route.ts`
 ```typescript
-export { POST } from '@vipro/qa-framework/api/run';
+export { POST } from '@vipro/tsty/api/run';
 ```
 
-### `src/app/api/qa-testing/screenshots/route.ts`
+### `src/app/api/tsty/screenshots/route.ts`
 ```typescript
-export { GET } from '@vipro/qa-framework/api/screenshots';
+export { GET } from '@vipro/tsty/api/screenshots';
 ```
 
 ## Step 4: Create Dashboard Page
 
-### `src/app/(dashboard)/qa-testing/page.tsx`
+### `src/app/(dashboard)/tsty/page.tsx`
 
 ```typescript
-import { QADashboard } from '@vipro/qa-framework/dashboard';
+import { QADashboard } from '@vipro/tsty/dashboard';
 
 export const metadata = {
-  title: 'QA Testing',
+  title: 'Tsty Testing',
   description: 'Automated testing dashboard'
 };
 
-export default function QATestingPage() {
+export default function TstyPage() {
   return <QADashboard />;
 }
 ```
@@ -80,15 +80,15 @@ export default function QATestingPage() {
 
 If you want to restrict access to admins only:
 
-### `src/app/(dashboard)/qa-testing/page.tsx`
+### `src/app/(dashboard)/tsty/page.tsx`
 
 ```typescript
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { QADashboard } from '@vipro/qa-framework/dashboard';
+import { QADashboard } from '@vipro/tsty/dashboard';
 
-export default async function QATestingPage() {
+export default async function TstyPage() {
   const session = await getServerSession(authOptions);
 
   // Restrict to admin users only
@@ -103,22 +103,22 @@ export default async function QATestingPage() {
 ## Step 6: Create Test Directory Structure
 
 ```bash
-mkdir -p .qa-testing/{actions,flows,reports,screenshots}
+mkdir -p .tsty/{actions,flows,reports,screenshots}
 ```
 
 ## Step 7: Add to .gitignore
 
 ```
-# QA Testing
-.qa-testing/reports/
-.qa-testing/screenshots/
+# Tsty Testing
+.tsty/reports/
+.tsty/screenshots/
 ```
 
 Keep flows and actions in version control, but ignore reports and screenshots.
 
 ## Step 8: Create Your First Test
 
-Create `.qa-testing/actions/login.action.json`:
+Create `.tsty/actions/login.action.json`:
 
 ```json
 {
@@ -147,7 +147,7 @@ Create `.qa-testing/actions/login.action.json`:
 }
 ```
 
-Create `.qa-testing/flows/smoke-test.json`:
+Create `.tsty/flows/smoke-test.json`:
 
 ```json
 {
@@ -189,7 +189,7 @@ Create `.qa-testing/flows/smoke-test.json`:
 ## Step 9: Run Tests
 
 1. Start your development server: `npm run dev`
-2. Visit `http://localhost:3000/qa-testing`
+2. Visit `http://localhost:3000/tsty`
 3. Click "Run Test" on your flow
 4. View the results in the Reports tab
 
@@ -204,7 +204,7 @@ If you encounter module resolution issues, ensure your `tsconfig.json` includes:
   "compilerOptions": {
     "moduleResolution": "bundler",
     "paths": {
-      "@vipro/qa-framework": ["./node_modules/@vipro/qa-framework/src"]
+      "@vipro/tsty": ["./node_modules/@vipro/tsty/src"]
     }
   }
 }
@@ -223,7 +223,7 @@ The framework uses Tailwind classes. Ensure your Tailwind configuration includes
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@vipro/qa-framework/**/*.{js,ts,jsx,tsx}'
+    './node_modules/@vipro/tsty/**/*.{js,ts,jsx,tsx}'
   ]
 };
 ```

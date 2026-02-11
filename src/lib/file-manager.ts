@@ -6,7 +6,7 @@ import type {
 	ActionFile,
 	Flow,
 	FlowFile,
-	QAFrameworkConfig,
+	TstyConfig,
 	ReportFile,
 	SmartCollection,
 	TestReport,
@@ -16,7 +16,7 @@ import type {
  * File manager for reading and writing QA test files
  */
 export class FileManager {
-	private config: QAFrameworkConfig;
+	private config: TstyConfig;
 
 	constructor(projectRoot?: string) {
 		// Always reload config to pick up QA_PROJECT_ROOT from environment

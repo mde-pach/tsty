@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/dashboard/components/dashboard-layout";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "QA Framework",
+	title: "Tsty",
 	description: "Visual QA testing dashboard for web applications",
 };
 

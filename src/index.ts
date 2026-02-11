@@ -1,5 +1,5 @@
 /**
- * @vipro/qa-framework
+ * @vipro/tsty
  * Visual QA testing framework for web applications
  */
 

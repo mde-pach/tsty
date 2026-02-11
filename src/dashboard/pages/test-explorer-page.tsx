@@ -534,7 +534,7 @@ export function TestExplorerPage() {
 				<div className="max-w-2xl text-center">
 					<div className="text-6xl mb-4">🧪</div>
 					<h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-						QA Framework Test Explorer
+						Tsty Test Explorer
 					</h2>
 					<p className="text-gray-600 dark:text-gray-400 mb-8">
 						Navigate your tests like a file explorer. Select a test to view

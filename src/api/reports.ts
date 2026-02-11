@@ -4,7 +4,7 @@ import { FileManager } from "../lib/file-manager";
 const fileManager = new FileManager();
 
 /**
- * GET /api/qa-testing/reports?flowId=<flowId>
+ * GET /api/tsty/reports?flowId=<flowId>
  * List all reports (optionally filtered by flow)
  */
 export async function GET(request: NextRequest) {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/qa-testing/reports?action=clear&flowId=<flowId>
+ * POST /api/tsty/reports?action=clear&flowId=<flowId>
  * Clear old reports for a flow, keeping only the most recent
  */
 export async function POST(request: NextRequest) {
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * DELETE /api/qa-testing/reports?id=<reportId>
+ * DELETE /api/tsty/reports?id=<reportId>
  * Delete a report
  */
 export async function DELETE(request: NextRequest) {

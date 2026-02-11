@@ -1,5 +1,5 @@
 /**
- * Example QA Framework Configuration
+ * Example Tsty Configuration
  *
  * Copy this file to your project root as qa.config.js
  * and customize for your application
@@ -7,7 +7,7 @@
 
 module.exports = {
 	// Directory where test files are stored
-	testDir: "./.qa-testing",
+	testDir: "./.tsty",
 
 	// Base URL of your application
 	baseUrl: "http://localhost:3000",

@@ -2,7 +2,7 @@
 
 > Visual QA testing framework with a beautiful dashboard. Test web applications with Playwright using drag-and-drop interfaces and auto-generated actions.
 
-[![npm version](https://img.shields.io/npm/v/@vipro/qa-framework.svg)](https://www.npmjs.com/package/@vipro/qa-framework)
+[![npm version](https://img.shields.io/npm/v/@vipro/tsty.svg)](https://www.npmjs.com/package/@vipro/tsty)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
@@ -52,13 +52,13 @@
 
 ```bash
 # Install globally (recommended)
-npm install -g @vipro/qa-framework
+npm install -g @vipro/tsty
 
 # Or use in your project
-npm install --save-dev @vipro/qa-framework
+npm install --save-dev @vipro/tsty
 
 # Or run without installing
-npx @vipro/qa-framework
+npx @vipro/tsty
 ```
 
 ## 🚀 Quick Start
@@ -73,7 +73,7 @@ cd my-project
 tsty
 
 # Or with npx
-npx qa-framework
+npx tsty
 
 # Opens at http://localhost:4000
 ```
@@ -389,7 +389,7 @@ ${faker.string.alphanumeric(10)} - Random 10-char string
 ## 🔧 Programmatic Usage
 
 ```typescript
-import { PlaywrightRunner, FileManager } from '@vipro/qa-framework';
+import { PlaywrightRunner, FileManager } from '@vipro/tsty';
 
 // Run a flow
 const runner = new PlaywrightRunner();
@@ -585,6 +585,6 @@ MIT © ViPro Team
 
 - [GitHub Repository](https://github.com/mde-pach/tsty)
 - [Issue Tracker](https://github.com/mde-pach/tsty/issues)
-- [NPM Package](https://www.npmjs.com/package/@vipro/qa-framework)
+- [NPM Package](https://www.npmjs.com/package/@vipro/tsty)
 - [Playwright Documentation](https://playwright.dev)
 - [Faker.js API Reference](https://fakerjs.dev/api/)

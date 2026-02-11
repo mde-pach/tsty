@@ -34,7 +34,7 @@ export default function ActionsPage() {
 	useEffect(() => {
 		const loadUsageStats = async () => {
 			try {
-				const response = await fetch("/api/qa-testing/usage/all-actions");
+				const response = await fetch("/api/tsty/usage/all-actions");
 				if (response.ok) {
 					const data = await response.json();
 					setUsageStats(data.data || {});

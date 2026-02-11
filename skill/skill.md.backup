@@ -807,7 +807,7 @@ ${faker.lorem.sentence}
 ## Key Principles
 
 ### Technical
-- **Directory**: `.tsty/` (legacy `.qa-testing/` supported)
+- **Directory**: `.tsty/`
 - **Commands**: `tsty` or `npx qa` (never run scripts directly)
 - **Primitives**: 48 auto-generated from Playwright's Page API
 - **Actions**: User-created behaviors composed from primitives
@@ -828,7 +828,7 @@ ${faker.lorem.sentence}
 
 ## Framework Info
 
-- **Package**: `@vipro/qa-framework`
+- **Package**: `@vipro/tsty`
 - **GitHub**: https://github.com/mde-pach/tsty
 - **Playwright**: https://playwright.dev
 - **Faker.js**: https://fakerjs.dev/api/

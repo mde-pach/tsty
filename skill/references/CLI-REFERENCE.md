@@ -23,7 +23,7 @@ Complete command-line interface reference for Tsty.
 
 Tsty provides a comprehensive CLI for test automation, CI/CD integration, and autonomous iteration.
 
-**Package**: `@vipro/qa-framework`
+**Package**: `@vipro/tsty`
 
 **Aliases**:
 - `tsty` (primary)
@@ -36,7 +36,7 @@ Tsty provides a comprehensive CLI for test automation, CI/CD integration, and au
 ### Global Installation
 
 ```bash
-npm install -g @vipro/qa-framework
+npm install -g @vipro/tsty
 ```
 
 **Usage**: `tsty <command>`
@@ -46,7 +46,7 @@ npm install -g @vipro/qa-framework
 ### Local Installation (Project Dependency)
 
 ```bash
-npm install --save-dev @vipro/qa-framework
+npm install --save-dev @vipro/tsty
 ```
 
 **Usage**: `npx qa <command>`
@@ -56,7 +56,7 @@ npm install --save-dev @vipro/qa-framework
 ### Direct Usage (No Install)
 
 ```bash
-npx @vipro/qa-framework <command>
+npx @vipro/tsty <command>
 ```
 
 **Usage**: One-time execution without installing
@@ -810,13 +810,13 @@ npx qa run test2 --fail-fast
 **Solution**:
 ```bash
 # Check if installed globally
-npm list -g @vipro/qa-framework
+npm list -g @vipro/tsty
 
 # If not, install
-npm install -g @vipro/qa-framework
+npm install -g @vipro/tsty
 
 # Or use npx
-npx @vipro/qa-framework run my-flow
+npx @vipro/tsty run my-flow
 ```
 
 ---

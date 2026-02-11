@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { runFlow } from "../cli/commands";
 
 /**
- * POST /api/qa-testing/run
+ * POST /api/tsty/run
  * Execute a test flow
  * Body: { flowId: string, device?: 'desktop' | 'mobile' }
  *
