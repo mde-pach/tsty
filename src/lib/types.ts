@@ -182,6 +182,7 @@ export interface StepResult {
 
 export interface TestReport {
   flow: string;
+  flowId?: string; // Original flow ID (e.g., "onboarding/01-root-page-layout")
   timestamp: string;
   device: 'desktop' | 'mobile';
   duration?: number;

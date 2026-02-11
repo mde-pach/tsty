@@ -1,0 +1,103 @@
+{
+  "flow": "Onboarding: Root Page Layout",
+  "timestamp": "2026-02-11T13:44:20.239Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Load root page",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Tests')",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Browse and run your test flows",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=New Flow",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=All Flows",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/01-root-page-layout-1770817459492/1-load-root-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-11T13:44:20.736Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 1224
+    },
+    {
+      "name": "Verify search bar",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "input[placeholder*='Search flows']",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/01-root-page-layout-1770817459492/2-verify-search-bar.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 42
+    },
+    {
+      "name": "Verify filter controls",
+      "url": "http://localhost:4000/",
+      "passed": false,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "text=By Folder",
+          "passed": false,
+          "error": "TimeoutError: page.waitForSelector: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=By Folder') to be visible\u001b[22m\n\u001b[2m    15 × locator resolved to hidden <option value=\"all\">📁 By Folder</option>\u001b[22m\n"
+        },
+        {
+          "type": "visible",
+          "selector": "text=Recently Updated",
+          "passed": false,
+          "error": "TimeoutError: page.waitForSelector: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Recently Updated') to be visible\u001b[22m\n\u001b[2m    15 × locator resolved to hidden <option value=\"recent\">Recently Updated</option>\u001b[22m\n"
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/01-root-page-layout-1770817459492/3-verify-filter-controls.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 10081
+    }
+  ],
+  "passed": 2,
+  "failed": 1,
+  "totalSteps": 3,
+  "runId": "onboarding/01-root-page-layout-1770817459492",
+  "screenshotDir": "run-onboarding/01-root-page-layout-1770817459492",
+  "stoppedEarly": true,
+  "stopReason": "Step \"Verify filter controls\" failed assertion: visible text=By Folder",
+  "duration": 12124
+}

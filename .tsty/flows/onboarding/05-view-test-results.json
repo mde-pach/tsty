@@ -1,0 +1,60 @@
+{
+  "name": "Onboarding: View Test Results",
+  "description": "Navigate to the Test Runs page, verify stats cards, filters, and run history are displayed. Click into a run detail.",
+  "baseUrl": "http://localhost:4000",
+  "failFast": true,
+  "steps": [
+    {
+      "name": "Navigate to Test Runs",
+      "url": "/",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } },
+        { "type": "click", "selector": "button[title='Results']" }
+      ],
+      "assertions": [
+        { "type": "visible", "selector": "h1:has-text('Test Runs')" }
+      ]
+    },
+    {
+      "name": "Verify stats cards",
+      "capture": { "screenshot": true },
+      "assertions": [
+        { "type": "visible", "selector": "text=Total Runs" },
+        { "type": "visible", "selector": "text=Passed" },
+        { "type": "visible", "selector": "text=Failed" }
+      ]
+    },
+    {
+      "name": "Verify filter controls",
+      "capture": { "screenshot": true },
+      "assertions": [
+        { "type": "visible", "selector": "input[placeholder*='Search by flow']" },
+        { "type": "visible", "selector": "select:has(option:has-text('All Status'))" },
+        { "type": "visible", "selector": "select:has(option:has-text('All Devices'))" }
+      ]
+    },
+    {
+      "name": "Verify run history shows entries",
+      "capture": { "screenshot": true },
+      "assertions": [
+        { "type": "visible", "selector": "text=Today" },
+        { "type": "visible", "selector": "text=steps passed" }
+      ]
+    },
+    {
+      "name": "Click Compare button",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "click", "selector": "text=Compare" }
+      ]
+    },
+    {
+      "name": "Verify compare and export buttons work",
+      "capture": { "screenshot": true },
+      "assertions": [
+        { "type": "visible", "selector": "text=Export" }
+      ]
+    }
+  ]
+}

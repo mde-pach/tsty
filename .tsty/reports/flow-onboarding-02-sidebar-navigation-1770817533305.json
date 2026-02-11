@@ -1,0 +1,88 @@
+{
+  "flow": "Onboarding: Sidebar Navigation",
+  "timestamp": "2026-02-11T13:45:26.951Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Load root page",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Tests')",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/02-sidebar-navigation-1770817526395/1-load-root-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-11T13:45:27.323Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 1145
+    },
+    {
+      "name": "Click Results tab",
+      "url": "http://localhost:4000/",
+      "passed": false,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Results')",
+          "passed": false,
+          "error": "TimeoutError: page.waitForSelector: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1:has-text(\\'Results\\')') to be visible\u001b[22m\n"
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/02-sidebar-navigation-1770817526395/2-click-results-tab.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding",
+          "timestamp": "2026-02-11T13:45:28.281Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 281ms",
+          "timestamp": "2026-02-11T13:45:28.562Z"
+        },
+        {
+          "type": "warning",
+          "text": "Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior",
+          "timestamp": "2026-02-11T13:45:28.586Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding",
+          "timestamp": "2026-02-11T13:45:28.619Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 101ms",
+          "timestamp": "2026-02-11T13:45:28.720Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 5179
+    }
+  ],
+  "passed": 1,
+  "failed": 1,
+  "totalSteps": 4,
+  "runId": "onboarding/02-sidebar-navigation-1770817526395",
+  "screenshotDir": "run-onboarding/02-sidebar-navigation-1770817526395",
+  "stoppedEarly": true,
+  "stopReason": "Step \"Click Results tab\" failed assertion: visible h1:has-text('Results')",
+  "duration": 6909
+}

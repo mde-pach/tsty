@@ -1,0 +1,33 @@
+{
+  "name": "Onboarding: Verify Flow Runs",
+  "description": "Navigate to a flow detail page and verify the Runs tab shows test run entries",
+  "baseUrl": "http://localhost:4000",
+  "failFast": true,
+  "steps": [
+    {
+      "name": "Navigate to flow detail page",
+      "url": "/flows/onboarding%2F01-root-page-layout",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } }
+      ],
+      "assertions": [
+        { "type": "visible", "selector": "text=Onboarding: Root Page Layout" }
+      ]
+    },
+    {
+      "name": "Click Runs tab",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "click", "selector": "text=Runs" }
+      ]
+    },
+    {
+      "name": "Verify runs are displayed",
+      "capture": { "screenshot": true },
+      "assertions": [
+        { "type": "visible", "selector": "text=steps passed" }
+      ]
+    }
+  ]
+}

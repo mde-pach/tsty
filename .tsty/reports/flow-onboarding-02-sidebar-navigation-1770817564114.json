@@ -1,0 +1,119 @@
+{
+  "flow": "Onboarding: Sidebar Navigation",
+  "timestamp": "2026-02-11T13:45:57.582Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Load root page",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Tests')",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/02-sidebar-navigation-1770817556738/1-load-root-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-11T13:45:58.063Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 1181
+    },
+    {
+      "name": "Click Results tab",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Test Runs')",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/02-sidebar-navigation-1770817556738/2-click-results-tab.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "warning",
+          "text": "Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior",
+          "timestamp": "2026-02-11T13:45:58.852Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 208
+    },
+    {
+      "name": "Click Library tab",
+      "url": "http://localhost:4000/runs",
+      "passed": false,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Action Library')",
+          "passed": false,
+          "error": "TimeoutError: page.waitForSelector: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1:has-text(\\'Action Library\\')') to be visible\u001b[22m\n"
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/02-sidebar-navigation-1770817556738/3-click-library-tab.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding",
+          "timestamp": "2026-02-11T13:45:59.126Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 384ms",
+          "timestamp": "2026-02-11T13:45:59.509Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding",
+          "timestamp": "2026-02-11T13:45:59.589Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 72ms",
+          "timestamp": "2026-02-11T13:45:59.661Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding",
+          "timestamp": "2026-02-11T13:45:59.681Z"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 63ms",
+          "timestamp": "2026-02-11T13:45:59.743Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 5111
+    }
+  ],
+  "passed": 2,
+  "failed": 1,
+  "totalSteps": 4,
+  "runId": "onboarding/02-sidebar-navigation-1770817556738",
+  "screenshotDir": "run-onboarding/02-sidebar-navigation-1770817556738",
+  "stoppedEarly": true,
+  "stopReason": "Step \"Click Library tab\" failed assertion: visible h1:has-text('Action Library')",
+  "duration": 7376
+}

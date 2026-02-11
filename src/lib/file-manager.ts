@@ -315,8 +315,8 @@ export class FileManager {
 				fs.readFileSync(filePath, "utf-8"),
 			) as TestReport;
 
-			// Extract flow ID from filename (format: flow-{flowId}-{timestamp}.json)
-			const flowId = file
+			// Use flowId stored in report (preferred), fallback to filename extraction for old reports
+			const flowId = report.flowId || file
 				.replace("flow-", "")
 				.split("-")
 				.slice(0, -1)

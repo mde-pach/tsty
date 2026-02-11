@@ -166,6 +166,7 @@ export class PlaywrightRunner {
 
 		const report: TestReport = {
 			flow: flow.name,
+			flowId,
 			timestamp: new Date().toISOString(),
 			device,
 			steps: [],

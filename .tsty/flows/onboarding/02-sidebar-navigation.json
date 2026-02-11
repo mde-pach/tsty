@@ -1,0 +1,49 @@
+{
+  "name": "Onboarding: Sidebar Navigation",
+  "description": "Test sidebar navigation between Tests, Results, and Library tabs. Verify each tab loads correctly.",
+  "baseUrl": "http://localhost:4000",
+  "failFast": true,
+  "steps": [
+    {
+      "name": "Load root page",
+      "url": "/",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } }
+      ],
+      "assertions": [
+        { "type": "visible", "selector": "h1:has-text('Tests')" }
+      ]
+    },
+    {
+      "name": "Click Results tab",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "click", "selector": "button[title='Results']" }
+      ],
+      "assertions": [
+        { "type": "visible", "selector": "h1:has-text('Test Runs')" }
+      ]
+    },
+    {
+      "name": "Click Library tab",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "click", "selector": "button[title='Library']" }
+      ],
+      "assertions": [
+        { "type": "visible", "selector": "h1:has-text('Actions')" }
+      ]
+    },
+    {
+      "name": "Return to Tests tab",
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "click", "selector": "button[title='Tests']" }
+      ],
+      "assertions": [
+        { "type": "visible", "selector": "h1:has-text('Tests')" }
+      ]
+    }
+  ]
+}

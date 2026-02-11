@@ -1,0 +1,147 @@
+{
+  "flow": "Onboarding: View Test Results",
+  "timestamp": "2026-02-11T13:50:12.568Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Navigate to Test Runs",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "h1:has-text('Test Runs')",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/05-view-test-results-1770817811810/1-navigate-to-test-runs.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-11T13:50:12.972Z"
+        },
+        {
+          "type": "warning",
+          "text": "Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior",
+          "timestamp": "2026-02-11T13:50:13.716Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 1306
+    },
+    {
+      "name": "Verify stats cards",
+      "url": "http://localhost:4000/runs",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "text=Total Runs",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Passed",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Failed",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/05-view-test-results-1770817811810/2-verify-stats-cards.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 93
+    },
+    {
+      "name": "Verify filter controls",
+      "url": "http://localhost:4000/runs",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "input[placeholder*='Search by flow']",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "select:has(option:has-text('All Status'))",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "select:has(option:has-text('All Devices'))",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/05-view-test-results-1770817811810/3-verify-filter-controls.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 97
+    },
+    {
+      "name": "Verify run history shows entries",
+      "url": "http://localhost:4000/runs",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "text=Today",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=steps passed",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/05-view-test-results-1770817811810/4-verify-run-history-shows-entries.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 83
+    },
+    {
+      "name": "Click on first run entry",
+      "url": "http://localhost:4000/runs",
+      "passed": false,
+      "assertions": [],
+      "screenshots": [
+        "run-onboarding/05-view-test-results-1770817811810/5-click-on-first-run-entry.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [
+        "Primitive execution failed: Error: Failed to execute action \"click\": page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Onboarding: View Test Results')\u001b[22m\n\u001b[2m    - locator resolved to 3 elements. Proceeding with the first one: <option value=\"Onboarding: View Test Results\">Onboarding: View Test Results</option>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+      ],
+      "consoleErrors": 0,
+      "duration": 30089
+    }
+  ],
+  "passed": 4,
+  "failed": 1,
+  "totalSteps": 6,
+  "runId": "onboarding/05-view-test-results-1770817811810",
+  "screenshotDir": "run-onboarding/05-view-test-results-1770817811810",
+  "stoppedEarly": true,
+  "stopReason": "Step \"Click on first run entry\" failed: Primitive execution failed: Error: Failed to execute action \"click\": page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Onboarding: View Test Results')\u001b[22m\n\u001b[2m    - locator resolved to 3 elements. Proceeding with the first one: <option value=\"Onboarding: View Test Results\">Onboarding: View Test Results</option>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+  "duration": 32457
+}

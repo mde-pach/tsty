@@ -1,0 +1,138 @@
+{
+  "flow": "Onboarding: Create New Flow",
+  "timestamp": "2026-02-11T13:48:30.398Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Load root page",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-onboarding/04-create-new-flow-1770817709675/1-load-root-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-11T13:48:30.944Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 1249
+    },
+    {
+      "name": "Click New Flow button",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-onboarding/04-create-new-flow-1770817709675/2-click-new-flow-button.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 114
+    },
+    {
+      "name": "Verify flow editor loaded",
+      "url": "http://localhost:4000/",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "text=New Flow",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Action Library",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Flow Steps",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Save",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/04-create-new-flow-1770817709675/3-verify-flow-editor-loaded.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "warning",
+          "text": "Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior",
+          "timestamp": "2026-02-11T13:48:31.785Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 136
+    },
+    {
+      "name": "Fill base URL",
+      "url": "http://localhost:4000/flows/new",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-onboarding/04-create-new-flow-1770817709675/4-fill-base-url.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 82
+    },
+    {
+      "name": "Verify devices and tags visible",
+      "url": "http://localhost:4000/flows/new",
+      "passed": true,
+      "assertions": [
+        {
+          "type": "visible",
+          "selector": "text=Devices",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Desktop",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Mobile",
+          "passed": true
+        },
+        {
+          "type": "visible",
+          "selector": "text=Tags",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        "run-onboarding/04-create-new-flow-1770817709675/5-verify-devices-and-tags-visible.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 64
+    }
+  ],
+  "passed": 5,
+  "failed": 0,
+  "totalSteps": 5,
+  "runId": "onboarding/04-create-new-flow-1770817709675",
+  "screenshotDir": "run-onboarding/04-create-new-flow-1770817709675",
+  "stoppedEarly": false,
+  "duration": 2389
+}
