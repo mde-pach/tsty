@@ -2,7 +2,7 @@
 
 > Visual QA testing framework with a beautiful dashboard. Test web applications with Playwright using drag-and-drop interfaces and auto-generated actions.
 
-[![npm version](https://img.shields.io/npm/v/@vipro/tsty.svg)](https://www.npmjs.com/package/@vipro/tsty)
+[![GitHub](https://img.shields.io/github/v/tag/mde-pach/tsty?label=version)](https://github.com/mde-pach/tsty)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
@@ -50,15 +50,18 @@
 
 ## 📦 Installation
 
+This package is not published on npm. Install directly from GitHub:
+
 ```bash
-# Install globally (recommended)
-npm install -g @vipro/tsty
+# Install globally with bun (recommended)
+bun install -g https://github.com/mde-pach/tsty.git
+
+# Or with npm
+npm install -g https://github.com/mde-pach/tsty.git
 
 # Or use in your project
-npm install --save-dev @vipro/tsty
-
-# Or run without installing
-npx @vipro/tsty
+bun add -d https://github.com/mde-pach/tsty.git
+npm install --save-dev https://github.com/mde-pach/tsty.git
 ```
 
 ## 🚀 Quick Start
@@ -71,9 +74,6 @@ cd my-project
 
 # Start Tsty (uses 'tsty' or 'qa' command)
 tsty
-
-# Or with npx
-npx tsty
 
 # Opens at http://localhost:4000
 ```
@@ -389,7 +389,8 @@ ${faker.string.alphanumeric(10)} - Random 10-char string
 ## 🔧 Programmatic Usage
 
 ```typescript
-import { PlaywrightRunner, FileManager } from '@vipro/tsty';
+// After installing: bun add -d https://github.com/mde-pach/tsty.git
+import { PlaywrightRunner, FileManager } from 'tsty';
 
 // Run a flow
 const runner = new PlaywrightRunner();
@@ -585,6 +586,6 @@ MIT © ViPro Team
 
 - [GitHub Repository](https://github.com/mde-pach/tsty)
 - [Issue Tracker](https://github.com/mde-pach/tsty/issues)
-- [NPM Package](https://www.npmjs.com/package/@vipro/tsty)
+- [Install from GitHub](https://github.com/mde-pach/tsty)
 - [Playwright Documentation](https://playwright.dev)
 - [Faker.js API Reference](https://fakerjs.dev/api/)

@@ -23,20 +23,26 @@ Complete command-line interface reference for Tsty.
 
 Tsty provides a comprehensive CLI for test automation, CI/CD integration, and autonomous iteration.
 
-**Package**: `@vipro/tsty`
+**Package**: `tsty` (installed from GitHub, not npm)
 
 **Aliases**:
 - `tsty` (primary)
-- `npx qa` (alternative)
+- `qa` (alternative)
 
 ---
 
 ## Installation
 
-### Global Installation
+This package is not published on npm. Install directly from GitHub:
+
+### Global Installation (Recommended)
 
 ```bash
-npm install -g @vipro/tsty
+# With bun (recommended)
+bun install -g https://github.com/mde-pach/tsty.git
+
+# With npm
+npm install -g https://github.com/mde-pach/tsty.git
 ```
 
 **Usage**: `tsty <command>`
@@ -46,20 +52,14 @@ npm install -g @vipro/tsty
 ### Local Installation (Project Dependency)
 
 ```bash
-npm install --save-dev @vipro/tsty
+# With bun
+bun add -d https://github.com/mde-pach/tsty.git
+
+# With npm
+npm install --save-dev https://github.com/mde-pach/tsty.git
 ```
 
-**Usage**: `npx qa <command>`
-
----
-
-### Direct Usage (No Install)
-
-```bash
-npx @vipro/tsty <command>
-```
-
-**Usage**: One-time execution without installing
+**Usage**: `npx tsty <command>` or `npx qa <command>`
 
 ---
 
@@ -810,13 +810,12 @@ npx qa run test2 --fail-fast
 **Solution**:
 ```bash
 # Check if installed globally
-npm list -g @vipro/tsty
+npm list -g tsty
 
-# If not, install
-npm install -g @vipro/tsty
-
-# Or use npx
-npx @vipro/tsty run my-flow
+# If not, install from GitHub
+bun install -g https://github.com/mde-pach/tsty.git
+# or
+npm install -g https://github.com/mde-pach/tsty.git
 ```
 
 ---

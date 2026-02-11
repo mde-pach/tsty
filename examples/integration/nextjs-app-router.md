@@ -4,10 +4,12 @@ This guide shows how to integrate Tsty into a Next.js project using the App Rout
 
 ## Step 1: Install the Framework
 
+This package is not published on npm. Install directly from GitHub:
+
 ```bash
-npm install @vipro/tsty
+bun add -d https://github.com/mde-pach/tsty.git
 # or
-bun add @vipro/tsty
+npm install --save-dev https://github.com/mde-pach/tsty.git
 ```
 
 ## Step 2: Create Configuration
@@ -36,27 +38,27 @@ module.exports = {
 
 ### `src/app/api/tsty/flows/route.ts`
 ```typescript
-export { GET, POST, PUT, DELETE } from '@vipro/tsty/api/flows';
+export { GET, POST, PUT, DELETE } from 'tsty/api/flows';
 ```
 
 ### `src/app/api/tsty/actions/route.ts`
 ```typescript
-export { GET, POST, PUT, DELETE } from '@vipro/tsty/api/actions';
+export { GET, POST, PUT, DELETE } from 'tsty/api/actions';
 ```
 
 ### `src/app/api/tsty/reports/route.ts`
 ```typescript
-export { GET, DELETE } from '@vipro/tsty/api/reports';
+export { GET, DELETE } from 'tsty/api/reports';
 ```
 
 ### `src/app/api/tsty/run/route.ts`
 ```typescript
-export { POST } from '@vipro/tsty/api/run';
+export { POST } from 'tsty/api/run';
 ```
 
 ### `src/app/api/tsty/screenshots/route.ts`
 ```typescript
-export { GET } from '@vipro/tsty/api/screenshots';
+export { GET } from 'tsty/api/screenshots';
 ```
 
 ## Step 4: Create Dashboard Page
@@ -64,7 +66,7 @@ export { GET } from '@vipro/tsty/api/screenshots';
 ### `src/app/(dashboard)/tsty/page.tsx`
 
 ```typescript
-import { QADashboard } from '@vipro/tsty/dashboard';
+import { QADashboard } from 'tsty/dashboard';
 
 export const metadata = {
   title: 'Tsty Testing',
@@ -86,7 +88,7 @@ If you want to restrict access to admins only:
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { QADashboard } from '@vipro/tsty/dashboard';
+import { QADashboard } from 'tsty/dashboard';
 
 export default async function TstyPage() {
   const session = await getServerSession(authOptions);
@@ -204,7 +206,7 @@ If you encounter module resolution issues, ensure your `tsconfig.json` includes:
   "compilerOptions": {
     "moduleResolution": "bundler",
     "paths": {
-      "@vipro/tsty": ["./node_modules/@vipro/tsty/src"]
+      "tsty": ["./node_modules/tsty/src"]
     }
   }
 }
@@ -223,7 +225,7 @@ The framework uses Tailwind classes. Ensure your Tailwind configuration includes
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@vipro/tsty/**/*.{js,ts,jsx,tsx}'
+    './node_modules/tsty/**/*.{js,ts,jsx,tsx}'
   ]
 };
 ```

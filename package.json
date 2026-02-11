@@ -1,5 +1,5 @@
 {
-	"name": "@vipro/tsty",
+	"name": "tsty",
 	"version": "0.1.0",
 	"description": "Tsty - Visual testing framework with Playwright",
 	"main": "src/index.ts",
@@ -43,7 +43,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/mde-pach/tsty.git"
+		"url": "https://github.com/mde-pach/tsty.git"
 	},
 	"bugs": {
 		"url": "https://github.com/mde-pach/tsty/issues"
@@ -61,7 +61,8 @@
 		"playwright": "^1.40.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"reactflow": "^11.11.4"
+		"reactflow": "^11.11.4",
+		"tsx": "^4.21.0"
 	},
 	"devDependencies": {
 		"@types/node": "^20.0.0",
@@ -70,7 +71,6 @@
 		"autoprefixer": "^10.4.0",
 		"postcss": "^8.4.0",
 		"tailwindcss": "^3.4.0",
-		"tsx": "^4.21.0",
 		"typescript": "^5.0.0"
 	}
 }

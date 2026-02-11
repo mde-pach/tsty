@@ -596,7 +596,7 @@ ${faker.lorem.sentence}
 
 ## Framework Info
 
-- **Package**: `@vipro/tsty`
+- **Package**: `tsty` (install from GitHub: `bun install -g https://github.com/mde-pach/tsty.git`)
 - **GitHub**: https://github.com/mde-pach/tsty
 - **Playwright**: https://playwright.dev
 - **Faker.js**: https://fakerjs.dev/api/
