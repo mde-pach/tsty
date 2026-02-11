@@ -69,9 +69,28 @@ function showHelp() {
   log('  --host <host>        Host for server (default: localhost)\n', 'reset');
 }
 
-function execTsxCommand(scriptPath, args) {
+function findTsx() {
+  const fs = require('fs');
   const frameworkDir = path.resolve(__dirname, '..');
-  const tsxBin = path.join(frameworkDir, 'node_modules', '.bin', 'tsx');
+
+  // 1. Check package's own node_modules (when running from source)
+  const ownTsx = path.join(frameworkDir, 'node_modules', '.bin', 'tsx');
+  if (fs.existsSync(ownTsx)) return ownTsx;
+
+  // 2. Check parent node_modules (when hoisted by bun/npm)
+  let dir = frameworkDir;
+  while (dir !== path.dirname(dir)) {
+    dir = path.dirname(dir);
+    const hoisted = path.join(dir, 'node_modules', '.bin', 'tsx');
+    if (fs.existsSync(hoisted)) return hoisted;
+  }
+
+  // 3. Fallback to just 'tsx' and hope it's in PATH
+  return 'tsx';
+}
+
+function execTsxCommand(scriptPath, args) {
+  const tsxBin = findTsx();
 
   const result = spawnSync(tsxBin, [scriptPath, ...args], {
     stdio: 'inherit',
@@ -80,6 +99,7 @@ function execTsxCommand(scriptPath, args) {
 
   if (result.error) {
     log(`❌ Failed to execute command: ${result.error.message}`, 'red');
+    log(`   Make sure tsx is installed: bun add tsx`, 'yellow');
     process.exit(1);
   }
 
