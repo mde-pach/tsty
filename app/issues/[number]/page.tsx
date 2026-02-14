@@ -132,14 +132,17 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
               {issue.repository && <span>{issue.repository}</span>}
               {issue.labels && issue.labels.length > 0 && (
                 <div className="flex items-center gap-2">
-                  {issue.labels.map((label) => (
-                    <span
-                      key={label.name}
-                      className="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                    >
-                      {label.name}
-                    </span>
-                  ))}
+                  {issue.labels.map((label, index) => {
+                    const labelText = typeof label === 'string' ? label : label.name;
+                    return (
+                      <span
+                        key={`${labelText}-${index}`}
+                        className="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                      >
+                        {labelText}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -162,6 +165,39 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="md:col-span-2 space-y-6">
+          {/* Before/After Comparison - Shown First for Quick Access */}
+          {referenceRun && latestRun && latestRun.id !== referenceRun.id && (
+            <Card>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Before/After Comparison
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Visual comparison to verify if the issue is fixed
+                  </p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() =>
+                    router.push(
+                      `/compare?flow=${issue.linkedFlowId}&reference=${issue.referenceRunId}&current=${latestRun.report.runId}`
+                    )
+                  }
+                >
+                  Full Screen
+                </Button>
+              </div>
+
+              <RunComparisonViewer
+                referenceRun={referenceRun}
+                currentRun={latestRun}
+                flowName={linkedFlow?.flow.name || "Test Flow"}
+              />
+            </Card>
+          )}
+
           {/* Description */}
           {issue.body && (
             <Card>
@@ -301,39 +337,6 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
               )}
             </div>
           </Card>
-
-          {/* Before/After Comparison */}
-          {referenceRun && latestRun && latestRun.id !== referenceRun.id && (
-            <Card>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Before/After Comparison
-                  </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Visual comparison to verify if the issue is fixed
-                  </p>
-                </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() =>
-                    router.push(
-                      `/compare?flow=${issue.linkedFlowId}&reference=${issue.referenceRunId}&current=${latestRun.report.runId}`
-                    )
-                  }
-                >
-                  Full Screen
-                </Button>
-              </div>
-
-              <RunComparisonViewer
-                referenceRun={referenceRun}
-                currentRun={latestRun}
-                flowName={linkedFlow?.flow.name || "Test Flow"}
-              />
-            </Card>
-          )}
         </div>
 
         {/* Sidebar */}

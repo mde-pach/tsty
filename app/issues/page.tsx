@@ -241,14 +241,17 @@ export default function IssuesPage() {
 
                       {issue.labels && issue.labels.length > 0 && (
                         <div className="flex items-center gap-1">
-                          {issue.labels.slice(0, 3).map((label) => (
-                            <span
-                              key={label.name}
-                              className="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                            >
-                              {label.name}
-                            </span>
-                          ))}
+                          {issue.labels.slice(0, 3).map((label, index) => {
+                            const labelText = typeof label === 'string' ? label : label.name;
+                            return (
+                              <span
+                                key={`${labelText}-${index}`}
+                                className="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                              >
+                                {labelText}
+                              </span>
+                            );
+                          })}
                           {issue.labels.length > 3 && (
                             <span className="text-xs">+{issue.labels.length - 3} more</span>
                           )}
