@@ -21,7 +21,7 @@ async function main() {
         const flowId = args[0];
         if (!flowId) {
           console.error('\x1b[31m❌ Error: Missing flow ID\x1b[0m');
-          console.log('\x1b[33m   Usage: tsty run <flow-id> [--device mobile] [--fail-fast] [--no-monitor] [--mark-reference]\n\x1b[0m');
+          console.log('\x1b[33m   Usage: tsty run <flow-id> [--device mobile] [--fail-fast] [--no-monitor] [--mark-reference] [--issue <number>]\n\x1b[0m');
           process.exit(1);
         }
 
@@ -41,11 +41,28 @@ async function main() {
         const monitorConsole = !args.includes('--no-monitor');
         const markReference = args.includes('--mark-reference');
 
+        // Parse --issue flag for automatic issue linking
+        const issueIndex = args.indexOf('--issue');
+        const issueNumber = issueIndex !== -1 && args[issueIndex + 1]
+          ? parseInt(args[issueIndex + 1])
+          : undefined;
+
+        if (issueIndex !== -1 && !issueNumber) {
+          console.error('\x1b[31m❌ Error: --issue requires a valid issue number\x1b[0m');
+          console.log('\x1b[33m   Usage: tsty run <flow-id> --issue <number>\n\x1b[0m');
+          process.exit(1);
+        }
+
         const runId = await commands.runFlow(flowId, device, projectRoot, { failFast, monitorConsole });
 
         // Mark as reference if requested
         if (markReference && runId) {
           await commands.markReference(runId, flowId, projectRoot);
+        }
+
+        // Auto-link and auto-set-reference for issue
+        if (issueNumber && runId) {
+          await commands.autoLinkIssue(issueNumber, flowId, runId, projectRoot);
         }
         break;
       }

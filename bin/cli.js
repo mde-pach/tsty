@@ -77,6 +77,7 @@ function showHelp() {
   log('  --fail-fast          Stop flow execution on first failed step', 'reset');
   log('  --no-monitor         Disable console error monitoring', 'reset');
   log('  --mark-reference     Mark this run as reference (use with run command)', 'reset');
+  log('  --issue <number>     Auto-link flow to issue + set reference on first run', 'reset');
   log('  --flow <flow-id>     Flow ID (use with mark-reference command)', 'reset');
   log('  --port <port>        Port for server (default: 4000)', 'reset');
   log('  --host <host>        Host for server (default: localhost)\n', 'reset');

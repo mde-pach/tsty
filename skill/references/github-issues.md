@@ -4,17 +4,15 @@ When a user mentions a GitHub issue, don't just track it -- autonomously create 
 
 ## 1. Autonomous Workflow Overview
 
-The full 9-step process:
+The full 7-step process:
 
 1. **Fetch** issue from GitHub
 2. **Store** locally in `.tsty/issues/`
 3. **Pre-flight** -- analyze issue type (bug, feature, UI, interaction)
 4. **Create flow** at `.tsty/flows/issue-{number}-{slug}.json`
-5. **Link** flow to issue (set `linkedFlowId` + `status: linked`)
-6. **Run reference** -- run test, extract runId, set `referenceRunId` + `status: testing`
-7. **Analyze** -- read ALL screenshots from reference run, identify root cause
-8. **Fix** -- apply code changes based on visual + technical analysis
-9. **Re-run & Compare** -- run again, read screenshots from BOTH runs, verify improvement
+5. **Run reference** with `--issue` flag -- automatically links flow to issue and sets reference run
+6. **Analyze & Fix** -- read ALL screenshots, identify root cause, apply code changes
+7. **Re-run & Compare** -- run again with `--issue` flag, read screenshots from BOTH runs, verify improvement
 
 ## 2. Phase 1: Fetch & Understand
 
@@ -72,58 +70,25 @@ Template:
 
 Always set `failFast: true` and `monitorConsole: false` for issue flows.
 
-## 4. Phase 3: Link Flow to Issue
+## 4. Phase 3: Run with --issue flag (auto-links + sets reference)
 
-Edit `.tsty/issues/{number}.json` to add linking fields:
-
-```json
-{
-  "number": 42,
-  "title": "Button doesn't save form",
-  "body": "When clicking save...",
-  "state": "open",
-  "labels": [],
-  "url": "https://github.com/...",
-  "createdAt": "2026-02-14T00:00:00Z",
-  "updatedAt": "2026-02-14T00:00:00Z",
-  "author": { "login": "user" },
-  "assignees": [],
-  "fetchedAt": "2026-02-14T18:00:00Z",
-  "repository": "owner/repo",
-  "linkedFlowId": "issue-42-checkout-submit",
-  "status": "linked"
-}
-```
-
-The two fields to add:
-- `"linkedFlowId"`: matches the flow filename (without `.json`)
-- `"status"`: set to `"linked"`
-
-## 5. Phase 4: Run & Mark Reference
-
-Run the flow:
+The `--issue` flag automates linking and reference marking in a single command:
 
 ```bash
-tsty run issue-{number}-{slug} --fail-fast --no-monitor
+tsty run issue-{number}-{slug} --fail-fast --no-monitor --issue {number}
 ```
 
-Extract the runId from output:
+This automatically:
+1. **Links** the flow to the issue (`linkedFlowId` + `status: linked`)
+2. **Sets the reference run** (`referenceRunId` + `status: testing`)
+
+No manual JSON editing needed. The CLI output will confirm:
 
 ```
-Screenshots saved to: .tsty/screenshots/run-issue-42-slug-1771094164532/
-                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                        This is the runId
-```
-
-Update `.tsty/issues/{number}.json`:
-
-```json
-{
-  ...existing fields...,
-  "linkedFlowId": "issue-42-checkout-submit",
-  "referenceRunId": "run-issue-42-checkout-submit-1771094164532",
-  "status": "testing"
-}
+🔗 Auto-linked issue #42 to flow: issue-42-checkout-submit
+📌 Auto-set reference run for issue #42: issue-42-checkout-submit-1771094164532
+   Status: testing
+   Next: fix the code, then re-run to compare before/after
 ```
 
 **Expected:** Test should FAIL (confirming the issue exists).
@@ -133,9 +98,11 @@ If test passes:
 - Re-analyze issue description and adjust the flow
 - Re-run
 
-If test fails: issue confirmed. Proceed to Phase 5.
+If test fails: issue confirmed. Proceed to Phase 4.
 
-## 6. Phase 5: Analyze & Fix
+> **Manual alternative**: You can still link and set reference separately with `tsty issue link` and `tsty issue set-reference` if needed.
+
+## 5. Phase 4: Analyze & Fix
 
 ### Read screenshots (mandatory, do not skip)
 
@@ -165,13 +132,15 @@ Based on visual + technical analysis, identify the affected files and apply fixe
 
 Iterate if needed: fix, re-run, analyze, fix again (up to 3 attempts).
 
-## 7. Phase 6: Verify Fix
+## 6. Phase 5: Verify Fix
 
 ### Re-run
 
 ```bash
-tsty run issue-{number}-{slug} --fail-fast --no-monitor
+tsty run issue-{number}-{slug} --fail-fast --no-monitor --issue {number}
 ```
+
+On subsequent runs, the `--issue` flag detects the reference already exists and tells you to compare:
 
 ### Compare before/after screenshots
 
@@ -206,7 +175,7 @@ Read .tsty/screenshots/<newRunId>/1-step-name.png
 
 **If still fails:** Analyze failure, apply additional fixes, re-run.
 
-## 8. Issue Status Progression
+## 7. Issue Status Progression
 
 | Status | Meaning | Fields Set |
 |---|---|---|
@@ -214,18 +183,18 @@ Read .tsty/screenshots/<newRunId>/1-step-name.png
 | `linked` | Linked to test flow, no reference run | + `linkedFlowId` |
 | `testing` | Reference run captured, actively testing | + `referenceRunId` |
 
-## 9. Decision Tree
+## 8. Decision Tree
 
 **User says "fix issue #X":**
-Full workflow -- fetch, create flow, link, run reference, analyze, fix, re-run, compare.
+Full workflow -- fetch, create flow, run with `--issue X` (auto-links + sets reference), analyze, fix, re-run with `--issue X`, compare.
 
 **User says "test issue #X":**
-Partial workflow -- fetch, create flow, link, run reference, analyze. Stop before fixing.
+Partial workflow -- fetch, create flow, run with `--issue X`, analyze. Stop before fixing.
 
 **User says "fetch issue #X":**
 Fetch only, then ask: "Should I also create a test flow and attempt to fix it?"
 
-## 10. Troubleshooting
+## 9. Troubleshooting
 
 ### No comparison data on issue page
 

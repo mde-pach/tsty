@@ -270,6 +270,9 @@ tsty run my-flow --fail-fast
 # Disable console monitoring
 tsty run my-flow --no-monitor
 
+# Auto-link to GitHub issue (links flow + sets reference on first run)
+tsty run my-flow --issue 42 --fail-fast
+
 # Combine with other options
 tsty run my-flow --device mobile --fail-fast
 ```

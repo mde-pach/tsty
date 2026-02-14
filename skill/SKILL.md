@@ -58,12 +58,15 @@ CREATE flow/action → RUN (tsty run X --fail-fast) → ANALYZE screenshots
 
 When asked to fix a GitHub issue, follow the full autonomous workflow:
 
-1. **Fetch**: `gh issue view <number> --repo owner/repo --json title,body,labels,number`
+1. **Fetch**: `gh issue view <number> --repo owner/repo --json title,body,labels,number` → save to `.tsty/issues/<number>.json`
 2. **Create flow**: `.tsty/flows/issue-{number}-{slug}.json` targeting the affected page
-3. **Run reference**: `tsty run issue-N-slug --fail-fast --no-monitor` → analyze screenshots (this captures the "before" state)
-4. **Fix code**: Read screenshots → identify root cause → edit application files
-5. **Re-run**: Same flow → compare before/after screenshots visually
-6. **Close**: `gh issue close <number> --comment "Fixed! Visual verification confirms improvement."`
+3. **Run reference**: `tsty run issue-N-slug --fail-fast --no-monitor --issue <number>` — the `--issue` flag **automatically** links the flow to the issue and sets the reference run (no manual JSON editing needed)
+4. **Analyze**: Read ALL screenshots from `.tsty/screenshots/<runId>/` → identify root cause
+5. **Fix code**: Edit application files based on visual + technical analysis
+6. **Re-run & compare**: `tsty run issue-N-slug --fail-fast --no-monitor --issue <number>` → on subsequent runs, the CLI detects the reference already exists and tells you to compare before/after
+7. **Close**: `gh issue close <number> --comment "Fixed! Visual verification confirms improvement."`
+
+**The `--issue` flag handles linking automatically**: on first run it links the flow and sets the reference run. On subsequent runs it's a no-op (comparison data is already set up). The before/after comparison is then available on the dashboard at `/issues/<number>`.
 
 **Flow naming**: `issue-{number}-{2-4 word slug}` (e.g., `issue-42-checkout-submit.json`)
 
@@ -111,6 +114,7 @@ tsty run <flow> --fail-fast              # Stop on first failure
 tsty run <flow> --fail-fast --no-monitor # Skip console monitoring (for dev servers)
 tsty run <flow> --device mobile          # Mobile viewport
 tsty run <flow> --mark-reference         # Mark run as baseline for comparison
+tsty run <flow> --issue <number>         # Auto-link flow to issue + set reference on first run
 
 # Listing & info
 tsty list                                # List flows

@@ -322,8 +322,8 @@ export async function markReference(runId: string, flowId: string | undefined, p
   let targetFlowId = flowId;
 
   if (!targetFlowId) {
-    // Extract flow ID from run ID format: run-{flowId}-{timestamp}
-    const match = runId.match(/^run-(.+)-\d+$/);
+    // Extract flow ID from run ID format: {flowId}-{timestamp}
+    const match = runId.match(/^(.+)-\d+$/);
     if (match) {
       targetFlowId = match[1];
     } else {
@@ -558,6 +558,44 @@ export async function viewIssue(issueNumber: number, projectRoot?: string): Prom
   } catch (error) {
     log(`\n❌ Error: ${(error as Error).message}`, 'red');
     process.exit(1);
+  }
+}
+
+/**
+ * Auto-link issue to flow and set reference run (called by --issue flag)
+ * - Links the issue to the flow if not already linked
+ * - Sets the reference run if issue has no referenceRunId yet
+ * - On subsequent runs, does nothing (comparison data already available)
+ */
+export async function autoLinkIssue(issueNumber: number, flowId: string, runId: string, projectRoot?: string): Promise<void> {
+  const issueManager = new GitHubIssueManager(path.join(projectRoot || process.cwd(), '.tsty/issues'));
+
+  try {
+    const issue = await issueManager.getIssue(issueNumber);
+
+    // Auto-link if not already linked
+    if (!issue.linkedFlowId) {
+      await issueManager.linkToFlow(issueNumber, flowId);
+      log(`\n🔗 Auto-linked issue #${issueNumber} to flow: ${flowId}`, 'green');
+    } else if (issue.linkedFlowId !== flowId) {
+      log(`\n⚠️  Issue #${issueNumber} already linked to flow: ${issue.linkedFlowId}`, 'yellow');
+      log(`   Skipping auto-link (use 'tsty issue link' to change)`, 'yellow');
+    }
+
+    // Auto-set reference if no reference run exists yet
+    if (!issue.referenceRunId) {
+      await issueManager.setReferenceRun(issueNumber, runId);
+      log(`📌 Auto-set reference run for issue #${issueNumber}: ${runId}`, 'green');
+      log(`   Status: testing`, 'cyan');
+      log(`   Next: fix the code, then re-run to compare before/after\n`, 'blue');
+    } else {
+      log(`\nℹ️  Issue #${issueNumber} already has reference run: ${issue.referenceRunId}`, 'cyan');
+      log(`   This run (${runId}) will be used as the "after" for comparison`, 'blue');
+      log(`   View comparison: open dashboard → Issues → #${issueNumber}\n`, 'blue');
+    }
+  } catch (error) {
+    log(`\n⚠️  Could not auto-link issue #${issueNumber}: ${(error as Error).message}`, 'yellow');
+    log(`   Run 'tsty issue fetch ${issueNumber}' first to fetch the issue\n`, 'yellow');
   }
 }
 
