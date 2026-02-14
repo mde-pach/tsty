@@ -1,0 +1,33 @@
+{
+  "flow": "Health Check",
+  "flowId": "_health-check",
+  "timestamp": "2026-02-14T21:57:57.725Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Homepage loads",
+      "url": "/",
+      "passed": false,
+      "assertions": [],
+      "screenshots": [
+        "run-_health-check-1771106277013/1-homepage-loads.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [
+        "Navigation failed: Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4000/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4000/\", waiting until \"networkidle\"\u001b[22m\n"
+      ],
+      "consoleErrors": 0,
+      "navigationFailed": true,
+      "duration": 120
+    }
+  ],
+  "passed": 0,
+  "failed": 1,
+  "totalSteps": 1,
+  "runId": "_health-check-1771106277013",
+  "screenshotDir": "run-_health-check-1771106277013",
+  "stoppedEarly": true,
+  "stopReason": "Navigation failed at step \"Homepage loads\" - expected URL not reached",
+  "duration": 855
+}

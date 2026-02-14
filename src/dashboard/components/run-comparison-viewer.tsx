@@ -73,25 +73,25 @@ export function RunComparisonViewer({
   const statusChanged = refPassed !== curPassed;
 
   return (
-    <div className="space-y-6">
-      {/* Overview Comparison */}
-      <div className="grid md:grid-cols-2 gap-4">
+    <div className="space-y-3">
+      {/* Compact Overview Comparison */}
+      <div className="grid md:grid-cols-2 gap-3">
         {/* Reference Run */}
-        <Card className="border-l-4 border-l-blue-500">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="border-l-4 border-l-blue-500 p-3">
+          <div className="flex items-center justify-between mb-2">
             <div>
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1">
+              <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
                 Before
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                 Reference Run
               </h3>
             </div>
-            <Badge variant={refPassed ? "success" : "error"}>
-              {refPassed ? "Passed" : "Failed"}
+            <Badge variant={refPassed ? "success" : "error"} size="sm">
+              {refPassed ? "✓" : "✗"}
             </Badge>
           </div>
-          <div className="space-y-2 text-sm">
+          <div className="space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">Flow</span>
               <span className="font-medium text-gray-900 dark:text-white">
@@ -126,21 +126,21 @@ export function RunComparisonViewer({
         </Card>
 
         {/* Current Run */}
-        <Card className="border-l-4 border-l-green-500">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="border-l-4 border-l-green-500 p-3">
+          <div className="flex items-center justify-between mb-2">
             <div>
-              <div className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide mb-1">
+              <div className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">
                 After
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                 Current Run
               </h3>
             </div>
-            <Badge variant={curPassed ? "success" : "error"}>
-              {curPassed ? "Passed" : "Failed"}
+            <Badge variant={curPassed ? "success" : "error"} size="sm">
+              {curPassed ? "✓" : "✗"}
             </Badge>
           </div>
-          <div className="space-y-2 text-sm">
+          <div className="space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">Flow</span>
               <span className="font-medium text-gray-900 dark:text-white">
@@ -175,42 +175,21 @@ export function RunComparisonViewer({
         </Card>
       </div>
 
-      {/* Status Change Alert */}
+      {/* Compact Status Change Alert */}
       {statusChanged && (
-        <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
-          <div className="flex items-center gap-3">
-            <svg
-              className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <div>
-              <p className="font-semibold text-yellow-900 dark:text-yellow-100">
-                Status Changed
-              </p>
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                Test went from {refPassed ? "Passed" : "Failed"} to{" "}
-                {curPassed ? "Passed" : "Failed"}
-              </p>
-            </div>
-          </div>
-        </Card>
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 px-3 py-2 rounded">
+          <p className="text-xs font-medium text-yellow-800 dark:text-yellow-200">
+            ⚠️ Status changed: {refPassed ? "Passed" : "Failed"} → {curPassed ? "Passed" : "Failed"}
+          </p>
+        </div>
       )}
 
-      {/* Step Selector */}
-      <Card>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          Select Step to Compare
+      {/* Compact Step Selector */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+          Select Step
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div className="flex flex-wrap gap-2">
           {referenceRun.report.steps.map((step, index) => {
             const isSelected = index === selectedStep;
             const refStepPassed = step.passed;
@@ -222,7 +201,7 @@ export function RunComparisonViewer({
                 key={index}
                 onClick={() => setSelectedStep(index)}
                 className={`
-                  px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                  px-2 py-1 rounded text-xs font-medium transition-colors
                   ${
                     isSelected
                       ? "bg-blue-600 text-white"
@@ -232,18 +211,15 @@ export function RunComparisonViewer({
                   }
                 `}
               >
-                Step {index + 1}
-                {stepStatusChanged && !isSelected && (
-                  <span className="ml-1">⚠️</span>
-                )}
+                {index + 1}{stepStatusChanged && !isSelected && "⚠️"}
               </button>
             );
           })}
         </div>
-      </Card>
+      </div>
 
-      {/* Screenshot Comparison */}
-      <Card>
+      {/* Screenshot Comparison - Full Width */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
         {refScreenshot && curScreenshot ? (
           <ScreenshotComparison
             referenceScreenshot={refScreenshot}
@@ -279,7 +255,7 @@ export function RunComparisonViewer({
             </p>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

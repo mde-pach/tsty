@@ -1,0 +1,65 @@
+{
+  "flow": "Issue #1: improve before/after comparison layout and size visualization",
+  "flowId": "issue-1-comparison-layout",
+  "timestamp": "2026-02-14T19:22:07.500Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Navigate to issues page",
+      "url": "http://localhost:4000/issues",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-issue-1-comparison-layout-1771096926497/1-navigate-to-issues-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-14T19:22:07.897Z"
+        },
+        {
+          "type": "error",
+          "text": "Each child in a list should have a unique \"key\" prop.%s%s See https://react.dev/link/warning-keys for more information. \n\nCheck the render method of `div`.  It was passed a child from IssuesPage.",
+          "timestamp": "2026-02-14T19:22:07.997Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 1,
+      "duration": 3090
+    },
+    {
+      "name": "View issue #1 detail page",
+      "url": "http://localhost:4000/issues/1",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-issue-1-comparison-layout-1771096926497/2-view-issue-1-detail-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-14T19:22:10.858Z"
+        },
+        {
+          "type": "error",
+          "text": "Each child in a list should have a unique \"key\" prop.%s%s See https://react.dev/link/warning-keys for more information. \n\nCheck the render method of `IssueDetailPage`. ",
+          "timestamp": "2026-02-14T19:22:10.946Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 1,
+      "duration": 3959
+    }
+  ],
+  "passed": 2,
+  "failed": 0,
+  "totalSteps": 2,
+  "runId": "issue-1-comparison-layout-1771096926497",
+  "screenshotDir": "run-issue-1-comparison-layout-1771096926497",
+  "stoppedEarly": false,
+  "duration": 8076
+}

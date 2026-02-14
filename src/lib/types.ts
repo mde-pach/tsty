@@ -3,6 +3,8 @@
  * Based on .tsty format
  */
 
+import type { Action } from './generated-actions';
+
 // ============================================================================
 // Primitives (Auto-generated from Playwright API)
 // ============================================================================
@@ -103,7 +105,7 @@ export type { Action, ActionType } from './generated-actions';
 export interface ActionDefinition {
   type: 'auth' | 'modal' | 'form' | 'navigation' | 'interaction' | 'data';
   description: string;
-  primitives: Primitive[];  // Building blocks that compose this action
+  primitives: Action[];  // Building blocks that compose this action (Primitive = Action)
   tags?: string[]; // Optional: Tags for organization
   dependencies?: string[]; // Optional: IDs of other actions this depends on
   category?: string; // Optional: Category for organization
@@ -125,7 +127,7 @@ export interface FlowStep {
   name: string;
   url?: string; // Optional: If omitted, stays on current page
   actions?: string[]; // References to action definition files
-  primitives?: Primitive[]; // Inline primitives (alternative to actions)
+  primitives?: Action[]; // Inline primitives (alternative to actions)
   capture?: {
     screenshot?: boolean | "always" | "on-failure" | "never"; // Conditional capture
     html?: boolean;
@@ -144,6 +146,7 @@ export interface Flow {
   devices?: ('desktop' | 'mobile')[];
   tags?: string[]; // Optional: Tags for organization
   dependencies?: string[]; // Optional: IDs of flows that must run before this one
+  category?: string; // Optional: Category for organization
   metadata?: Record<string, unknown>; // Optional: Additional metadata
   failFast?: boolean; // Optional: Stop execution on first failed step (default: false)
   monitorConsole?: boolean; // Optional: Monitor console for errors and stop on critical errors (default: true)

@@ -453,7 +453,7 @@ export class PlaywrightRunner {
 					const context: InterpolationContext = {
 						config: {
 							baseUrl: this.config.baseUrl,
-							credentials: this.config.credentials,
+							credentials: this.config.auth?.credentials,
 						},
 					};
 
@@ -551,7 +551,7 @@ export class PlaywrightRunner {
 		const context: InterpolationContext = {
 			config: {
 				baseUrl: this.config.baseUrl,
-				credentials: this.config.credentials,
+				credentials: this.config.auth?.credentials,
 			},
 		};
 

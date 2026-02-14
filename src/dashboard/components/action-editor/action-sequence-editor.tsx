@@ -129,7 +129,7 @@ function SortableAction({
 		} else if ("key" in action && action.key) {
 			details = action.key;
 		} else if ("path" in action && action.path) {
-			details = action.path;
+			details = typeof action.path === 'string' ? action.path : '';
 		} else if ("timeout" in action && action.timeout) {
 			details = `${action.timeout}ms`;
 		} else if ("state" in action && action.state) {

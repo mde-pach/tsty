@@ -47,6 +47,8 @@ function showHelp() {
   log('  mark-reference <run-id>    Mark run as reference for comparison', 'reset');
   log('  clear-reference <flow>     Clear reference for a flow', 'reset');
   log('  list-references            List all flows with references', 'reset');
+  log('  analyze-screenshots <run>  Analyze screenshots from a test run', 'reset');
+  log('  compare-runs <before> <after> Compare screenshots between runs', 'reset');
   log('  issue fetch <number>       Fetch GitHub issue (requires gh CLI)', 'reset');
   log('  issue list                 List fetched issues', 'reset');
   log('  issue link <number>        Link issue to flow', 'reset');
@@ -66,6 +68,8 @@ function showHelp() {
   log('  tsty primitives                # Show 48 primitives', 'cyan');
   log('  tsty primitives mouse          # Show mouse primitives', 'cyan');
   log('  tsty validate checkout-flow', 'cyan');
+  log('  tsty analyze-screenshots run-checkout-1234567  # Analyze test screenshots', 'cyan');
+  log('  tsty compare-runs run-before-111 run-after-222 # Compare before/after', 'cyan');
   log('  tsty server --port 3000\n', 'cyan');
 
   log('Options:', 'bright');

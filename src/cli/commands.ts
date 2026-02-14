@@ -455,16 +455,25 @@ export async function listIssues(projectRoot?: string): Promise<void> {
 
       log(`  #${issue.number} - ${issue.title}`, 'cyan');
       log(`    State: ${issue.state}`, 'reset');
-      log(`    Status: ${issue.status}`, statusColors[issue.status] || 'reset');
-      log(`    Repository: ${issue.repository}`, 'reset');
-      log(`    Fetched: ${new Date(issue.fetchedAt).toLocaleString()}`, 'reset');
+
+      if ('status' in issue && issue.status) {
+        log(`    Status: ${issue.status}`, statusColors[issue.status as keyof typeof statusColors] || 'reset');
+      }
+
+      if ('repository' in issue && issue.repository) {
+        log(`    Repository: ${issue.repository}`, 'reset');
+      }
+
+      if ('fetchedAt' in issue && issue.fetchedAt) {
+        log(`    Fetched: ${new Date(issue.fetchedAt).toLocaleString()}`, 'reset');
+      }
 
       if (issue.linkedFlowId) {
         log(`    Linked to flow: ${issue.linkedFlowId}`, 'blue');
       }
 
       if (issue.labels && issue.labels.length > 0) {
-        log(`    Labels: ${issue.labels.map(l => l.name).join(', ')}`, 'reset');
+        log(`    Labels: ${issue.labels.map(l => typeof l === 'string' ? l : l.name).join(', ')}`, 'reset');
       }
 
       log('', 'reset');
@@ -505,14 +514,29 @@ export async function viewIssue(issueNumber: number, projectRoot?: string): Prom
 
     log('Details:', 'bright');
     log(`  State: ${issue.state}`, 'reset');
-    log(`  Status: ${issue.status}`, 'reset');
-    log(`  Repository: ${issue.repository}`, 'reset');
-    log(`  URL: ${issue.url}`, 'blue');
-    log(`  Created: ${new Date(issue.createdAt).toLocaleString()}`, 'reset');
-    log(`  Updated: ${new Date(issue.updatedAt).toLocaleString()}`, 'reset');
+
+    if ('status' in issue && issue.status) {
+      log(`  Status: ${issue.status}`, 'reset');
+    }
+
+    if ('repository' in issue && issue.repository) {
+      log(`  Repository: ${issue.repository}`, 'reset');
+    }
+
+    if ('url' in issue && issue.url) {
+      log(`  URL: ${issue.url}`, 'blue');
+    }
+
+    if (issue.createdAt) {
+      log(`  Created: ${new Date(issue.createdAt).toLocaleString()}`, 'reset');
+    }
+
+    if (issue.updatedAt) {
+      log(`  Updated: ${new Date(issue.updatedAt).toLocaleString()}`, 'reset');
+    }
 
     if (issue.labels && issue.labels.length > 0) {
-      log(`  Labels: ${issue.labels.map(l => l.name).join(', ')}`, 'reset');
+      log(`  Labels: ${issue.labels.map(l => typeof l === 'string' ? l : l.name).join(', ')}`, 'reset');
     }
 
     if (issue.linkedFlowId) {
@@ -549,6 +573,186 @@ export async function setIssueReference(issueNumber: number, runId: string, proj
     log(`\n✅ Reference run set for issue #${issueNumber}`, 'green');
     log(`   Run ID: ${runId}`, 'cyan');
     log(`   Status: testing\n`, 'reset');
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * Analyze screenshots from a test run
+ * Prompts Claude to read and analyze each screenshot
+ */
+export async function analyzeScreenshots(runId: string, projectRoot?: string): Promise<void> {
+  const tstyDir = path.join(projectRoot || process.cwd(), '.tsty');
+  const screenshotsDir = path.join(tstyDir, 'screenshots', runId);
+  const cacheFile = path.join(tstyDir, 'screenshot-cache.json');
+
+  try {
+    if (!fs.existsSync(screenshotsDir)) {
+      log(`\n❌ Error: Screenshot directory not found: ${runId}`, 'red');
+      log('   Available runs:', 'yellow');
+      const screenshotsRoot = path.join(tstyDir, 'screenshots');
+      if (fs.existsSync(screenshotsRoot)) {
+        const runs = fs.readdirSync(screenshotsRoot).filter(f => f.startsWith('run-'));
+        runs.slice(0, 5).forEach(run => log(`   - ${run}`, 'cyan'));
+        if (runs.length > 5) {
+          log(`   ... and ${runs.length - 5} more`, 'cyan');
+        }
+      }
+      process.exit(1);
+    }
+
+    const screenshots = fs.readdirSync(screenshotsDir)
+      .filter(f => f.endsWith('.png'))
+      .sort();
+
+    if (screenshots.length === 0) {
+      log(`\n⚠️  No screenshots found in run: ${runId}`, 'yellow');
+      return;
+    }
+
+    // Load cache if exists
+    let cache: Record<string, { description?: string; hasIssues?: boolean; timestamp?: string }> = {};
+    if (fs.existsSync(cacheFile)) {
+      try {
+        const cacheContent = fs.readFileSync(cacheFile, 'utf-8');
+        cache = JSON.parse(cacheContent);
+      } catch (error) {
+        // Invalid cache, ignore
+      }
+    }
+
+    log(`\n📸 Screenshot Analysis for Run: ${runId}`, 'bright');
+    log(`   Found ${screenshots.length} screenshot(s)\n`, 'cyan');
+
+    let cacheHits = 0;
+    let cacheMisses = 0;
+
+    screenshots.forEach((screenshot, index) => {
+      const screenshotPath = path.join(screenshotsDir, screenshot);
+      const screenshotKey = `${runId}/${screenshot}`;
+      const cached = cache[screenshotKey];
+
+      log(`${index + 1}. ${screenshot}`, 'bright');
+      log(`   Path: ${screenshotPath}`, 'cyan');
+
+      if (cached && cached.description) {
+        // Display cached description
+        cacheHits++;
+        log(`   ✅ Cached Analysis:`, 'green');
+        log(`      ${cached.description}`, 'reset');
+        if (cached.hasIssues) {
+          log(`      ⚠️  Issues detected in this screenshot`, 'yellow');
+        }
+        if (cached.timestamp) {
+          log(`      Last analyzed: ${new Date(cached.timestamp).toLocaleString()}`, 'blue');
+        }
+      } else {
+        // No cache, needs analysis
+        cacheMisses++;
+        log(`   ❌ Not analyzed yet`, 'yellow');
+        log(`   Action: Use Read tool to view and analyze this screenshot`, 'yellow');
+      }
+      console.log();
+    });
+
+    // Show cache statistics
+    if (cacheHits > 0 || cacheMisses > 0) {
+      log(`📊 Cache Statistics:`, 'bright');
+      log(`   Cache hits: ${cacheHits}/${screenshots.length} (${Math.round(cacheHits / screenshots.length * 100)}%)`, 'cyan');
+      if (cacheMisses > 0) {
+        log(`   Need analysis: ${cacheMisses} screenshots`, 'yellow');
+        log(`   Estimated token savings: ${cacheHits * 1700} tokens`, 'green');
+      }
+      console.log();
+    }
+
+    if (cacheMisses > 0) {
+      log(`📝 REQUIRED NEXT STEPS FOR UNANALYZED SCREENSHOTS:\n`, 'bright');
+      log(`1. Read EACH unanalyzed screenshot PNG using the Read tool`, 'reset');
+      log(`2. Analyze the visual content (2-3 sentences)`, 'reset');
+      log(`3. Update cache with description:`, 'reset');
+      log(`   Add entry to ${cacheFile}`, 'cyan');
+      log(`4. Re-run this command to see cached descriptions\n`, 'reset');
+
+      log(`⚠️  CRITICAL: Visual analysis is mandatory!`, 'red');
+      log(`   Exit code 0 ≠ Feature works. Screenshots show the truth.\n`, 'red');
+    } else {
+      log(`✅ All screenshots have been analyzed!`, 'green');
+      log(`   Review the descriptions above.\n`, 'green');
+    }
+
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * Compare screenshots between two runs (before/after)
+ */
+export async function compareRuns(beforeRunId: string, afterRunId: string, projectRoot?: string): Promise<void> {
+  const tstyDir = path.join(projectRoot || process.cwd(), '.tsty');
+  const beforeDir = path.join(tstyDir, 'screenshots', beforeRunId);
+  const afterDir = path.join(tstyDir, 'screenshots', afterRunId);
+
+  try {
+    // Validate both runs exist
+    if (!fs.existsSync(beforeDir)) {
+      log(`\n❌ Error: Before run not found: ${beforeRunId}`, 'red');
+      process.exit(1);
+    }
+    if (!fs.existsSync(afterDir)) {
+      log(`\n❌ Error: After run not found: ${afterRunId}`, 'red');
+      process.exit(1);
+    }
+
+    const beforeScreenshots = fs.readdirSync(beforeDir).filter(f => f.endsWith('.png')).sort();
+    const afterScreenshots = fs.readdirSync(afterDir).filter(f => f.endsWith('.png')).sort();
+
+    log(`\n🔄 Before/After Screenshot Comparison`, 'bright');
+    log(`   Before: ${beforeRunId} (${beforeScreenshots.length} screenshots)`, 'blue');
+    log(`   After:  ${afterRunId} (${afterScreenshots.length} screenshots)\n`, 'green');
+
+    log(`📸 COMPARISON REQUIRED:\n`, 'yellow');
+
+    // Match screenshots by step number
+    const maxScreenshots = Math.max(beforeScreenshots.length, afterScreenshots.length);
+    for (let i = 0; i < maxScreenshots; i++) {
+      const beforeFile = beforeScreenshots[i];
+      const afterFile = afterScreenshots[i];
+
+      log(`Step ${i + 1}:`, 'bright');
+
+      if (beforeFile) {
+        log(`  BEFORE: ${beforeFile}`, 'blue');
+        log(`    Path: ${path.join(beforeDir, beforeFile)}`, 'cyan');
+        log(`    Action: Read this PNG to see the "before" state`, 'yellow');
+      } else {
+        log(`  BEFORE: (no screenshot)`, 'blue');
+      }
+
+      if (afterFile) {
+        log(`  AFTER:  ${afterFile}`, 'green');
+        log(`    Path: ${path.join(afterDir, afterFile)}`, 'cyan');
+        log(`    Action: Read this PNG to see the "after" state`, 'yellow');
+      } else {
+        log(`  AFTER:  (no screenshot)`, 'green');
+      }
+
+      log(`  Compare: What changed visually?\n`, 'yellow');
+    }
+
+    log(`📝 VISUAL VERIFICATION CHECKLIST:\n`, 'bright');
+    log(`□ Read BEFORE screenshots - what was wrong?`, 'reset');
+    log(`□ Read AFTER screenshots - what changed?`, 'reset');
+    log(`□ Compare each screenshot pair - is improvement visible?`, 'reset');
+    log(`□ Verify the issue is visually fixed`, 'reset');
+    log(`□ Document what changed visually\n`, 'reset');
+
+    log(`✅ Only commit if visual verification confirms the fix worked!\n`, 'green');
+
   } catch (error) {
     log(`\n❌ Error: ${(error as Error).message}`, 'red');
     process.exit(1);

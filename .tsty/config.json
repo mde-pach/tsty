@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:4000",
+  "playwright": {
+    "headless": true,
+    "timeout": 30000
+  }
+}

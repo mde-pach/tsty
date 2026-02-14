@@ -40,9 +40,13 @@ BUT analyze strategically to save time & tokens
 
 **When analysis IS needed:**
 1. List screenshots: `ls -1 .tsty/screenshots/run-<flow-id>-<timestamp>/*.png`
-2. Read relevant PNGs (failure point or target page, not ALL if unnecessary)
-3. Analyze what you see (2-3 sentences)
-4. Document issues
+2. **Check cache first** (AUTOMATIC - saves 60-80% tokens):
+   ```bash
+   cat .tsty/screenshot-cache.json | jq -r ".\"1-homepage.png\".description // empty"
+   ```
+3. If cached → Use description (0 tokens)
+4. If NOT cached → Read PNG, analyze (2-3 sentences), **update cache**
+5. Document issues
 
 **When analysis NOT needed:**
 1. List screenshots (verify they exist)
@@ -60,7 +64,9 @@ BUT analyze strategically to save time & tokens
    ls -1 .tsty/screenshots/run-<flow>-<after-timestamp>/*.png
    ```
 
-2. **Read screenshots from BOTH runs** using the Read tool.
+2. **Check cache, then read screenshots from BOTH runs:**
+   - BEFORE screenshots: Usually cached (first run), use cache (saves tokens)
+   - AFTER screenshots: Usually new (just ran), read fresh and cache
 
 3. **Compare visually:**
    - What was wrong in BEFORE screenshots?
@@ -69,6 +75,8 @@ BUT analyze strategically to save time & tokens
 
 4. **Only commit if visual verification passes.**
 
+**💡 Cache optimization:** Before/after comparison benefits most from caching—BEFORE screenshots were already analyzed, reuse those descriptions (3400+ token savings on 2 screenshots).
+
 **🚨 SCREENSHOT ANALYSIS ENFORCEMENT 🚨**
 
 **YOU CANNOT SKIP SCREENSHOT ANALYSIS. This is a BLOCKING REQUIREMENT.**
@@ -76,30 +84,64 @@ BUT analyze strategically to save time & tokens
 **After EVERY test run, you MUST demonstrate you've analyzed screenshots by:**
 
 1. **Listing them:** Show the `ls -1 .tsty/screenshots/...` output
-2. **Reading them:** Use Read tool on EVERY PNG file
-3. **Describing what you see:** Write 2-3 sentences about WHAT IS VISUALLY PRESENT in each screenshot
-4. **Identifying issues:** List ANY visual problems (error pages, broken layouts, missing elements)
+2. **Check cache:** For each screenshot, check `.tsty/screenshot-cache.json` first
+3. **Use cached or read fresh:** Use cached description (0 tokens) or Read PNG if not cached
+4. **Describing what you see:** Write 2-3 sentences about WHAT IS VISUALLY PRESENT
+5. **Update cache:** After reading new PNGs, add to cache for future runs
+6. **Identifying issues:** List ANY visual problems (error pages, broken layouts, missing elements)
 
-**Common mistake:** Saying "I'll analyze screenshots" without actually Reading the PNG files.
+**Common mistake:** Saying "I'll analyze screenshots" without checking cache or Reading the PNG files.
 
-**Correct pattern:**
+**Correct pattern (with caching):**
 ```
 Test passed. Now analyzing screenshots:
 
 1. Listing: ls -1 .tsty/screenshots/run-xxx-xxx/*.png
    Output: 1-homepage.png, 2-issue-page.png
 
-2. Reading screenshot 1: Read .tsty/screenshots/.../1-homepage.png
+2. Checking cache: cat .tsty/screenshot-cache.json | jq -r ".\"run-xxx-xxx/1-homepage.png\".description"
+   ✅ Cache hit: "Shows tsty dashboard homepage with navigation, 3 flows listed, no errors visible"
+   (Saved 1700 tokens by using cached description)
+
+3. Checking cache: cat .tsty/screenshot-cache.json | jq -r ".\"run-xxx-xxx/2-issue-page.png\".description"
+   ❌ Cache miss (new screenshot)
+   Reading: Read .tsty/screenshots/.../2-issue-page.png
    Visual observation: Shows Next.js error overlay with red "Runtime Error" banner.
    Text visible: "ENOENT: no such file or directory, open '/Users/.../pages/_document.js'"
-   Conclusion: Server has build error, NOT working homepage.
+   Conclusion: Server has build error, NOT working issue page.
 
-3. Reading screenshot 2: Read .tsty/screenshots/.../2-issue-page.png
-   Visual observation: Same error page as screenshot 1.
-   Conclusion: Build error prevents all pages from loading.
+   Updating cache (write to .tsty/screenshot-cache.json):
+   {
+     "run-xxx-xxx/2-issue-page.png": {
+       "description": "Shows Next.js error overlay with red Runtime Error banner. Text visible: ENOENT: no such file or directory. Server has build error, NOT working issue page.",
+       "timestamp": "2026-02-14T22:30:00Z",
+       "analyzed": true,
+       "hasIssues": true,
+       "errorType": "build-error"
+     }
+   }
 
 4. Issue identified: Server running but has build errors. Must fix build before testing.
+   Cache stats: 1/2 hits (saved 1700 tokens, 50% reduction)
+
+5. User can now run: tsty analyze-screenshots run-xxx-xxx
+   This will display all cached descriptions in the terminal!
 ```
+
+**📋 Cache File Format (.tsty/screenshot-cache.json):**
+```json
+{
+  "run-{flowId}-{timestamp}/{screenshot-name}.png": {
+    "description": "Your 2-3 sentence visual analysis here",
+    "timestamp": "ISO 8601 timestamp",
+    "analyzed": true,
+    "hasIssues": boolean,
+    "errorType": "build-error | runtime-error | layout-issue | missing-element" (optional)
+  }
+}
+```
+
+**🔑 Cache Key Format:** `{runId}/{screenshot-filename}.png` (e.g., `run-flow-123-456/1-homepage.png`)
 
 **DO NOT proceed to next step without completing this 4-part analysis.**
 
@@ -663,10 +705,16 @@ For cases where autonomous fixing isn't appropriate (e.g., complex architectural
 
 **Working with GitHub issues:**
 - [AUTONOMOUS-ISSUE-FIXING.md](references/AUTONOMOUS-ISSUE-FIXING.md) - ⭐ **PRIMARY WORKFLOW** - Fetch → Test → Fix → Verify
+- [REPORTING-ISSUES.md](references/REPORTING-ISSUES.md) - When to report vs fix autonomously
 
 **Starting your first test:**
 - [E2E-TESTING-GUIDE.md](references/E2E-TESTING-GUIDE.md) - HTML-first approach
 - [USER-FIRST-TESTING.md](references/USER-FIRST-TESTING.md) - User-like interactions
+
+**Creating actions and flows:**
+- [DECISION-GUIDE.md](references/DECISION-GUIDE.md) - When to create actions vs use primitives
+- [SELECTOR-PATTERNS.md](references/SELECTOR-PATTERNS.md) - Battle-tested selector patterns
+- [ASSERTIONS.md](references/ASSERTIONS.md) - Assertion patterns reference
 
 **After EVERY test run:**
 - [VERIFICATION-CHECKLIST.md](references/VERIFICATION-CHECKLIST.md) - Step-by-step validation
@@ -686,7 +734,8 @@ For cases where autonomous fixing isn't appropriate (e.g., complex architectural
 - [CONFIG.md](references/CONFIG.md) - Configuration options
 
 **Troubleshooting:**
-- [ANALYSIS-METHODS.md](references/ANALYSIS-METHODS.md) - Analyzing reports/screenshots
+- [ANALYSIS-METHODS.md](references/ANALYSIS-METHODS.md) - Analyzing reports/screenshots/logs
+- [ANALYSIS-EXAMPLES.md](references/ANALYSIS-EXAMPLES.md) - Concrete examples of good analysis
 - [FAIL-FAST-GUIDE.md](references/FAIL-FAST-GUIDE.md) - Stopping on first failure
 
 **Using dashboard:**
@@ -712,9 +761,11 @@ tsty primitives                    # List 48 primitives
 tsty primitives mouse              # List mouse primitives
 
 # Screenshot Analysis
+tsty analyze-screenshots <run-id>             # Display cached screenshot descriptions in terminal!
 ls -1 .tsty/screenshots/<run-id>/*.png        # List all screenshots from a run
 ls -1 .tsty/screenshots/run-*-<before>/*.png  # List before screenshots
 ls -1 .tsty/screenshots/run-*-<after>/*.png   # List after screenshots
+cat .tsty/screenshot-cache.json | jq           # View all cached screenshot descriptions
 
 # GitHub Issue Integration (using gh CLI)
 gh issue view <number> --repo owner/repo --json title,body,labels,number  # Fetch issue
@@ -935,6 +986,7 @@ ${faker.lorem.sentence}
 ### 🎯 Core Workflows (Read First)
 
 - **[ITERATIVE-WORKFLOW.md](references/ITERATIVE-WORKFLOW.md)** - ⭐ CRITICAL: Iteration loop with examples
+- **[FAST-ITERATION.md](references/FAST-ITERATION.md)** - Advanced: Speed optimization (20-30s cycles)
 - **[E2E-TESTING-GUIDE.md](references/E2E-TESTING-GUIDE.md)** - ⭐ CRITICAL: HTML-first approach
 - **[VERIFICATION-CHECKLIST.md](references/VERIFICATION-CHECKLIST.md)** - ⭐ CRITICAL: Step-by-step validation
 - **[ANALYSIS-METHODS.md](references/ANALYSIS-METHODS.md)** - Analyzing reports/screenshots/logs
@@ -945,6 +997,7 @@ ${faker.lorem.sentence}
 
 - **[FLOW-STRUCTURE.md](references/FLOW-STRUCTURE.md)** - Flow JSON schema with examples
 - **[ACTIONS.md](references/ACTIONS.md)** - 48 Playwright primitives
+- **[ASSERTIONS.md](references/ASSERTIONS.md)** - Assertion patterns and examples
 - **[VARIABLES.md](references/VARIABLES.md)** - Variable interpolation & Faker.js
 - **[CONFIG.md](references/CONFIG.md)** - Configuration options
 - **[CLI-REFERENCE.md](references/CLI-REFERENCE.md)** - All CLI commands

@@ -1,0 +1,79 @@
+{
+  "flow": "Issue #1: improve before/after comparison layout and size visualization",
+  "flowId": "issue-1-comparison-layout",
+  "timestamp": "2026-02-14T19:23:46.023Z",
+  "device": "desktop",
+  "steps": [
+    {
+      "name": "Navigate to issues page",
+      "url": "http://localhost:4000/issues",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-issue-1-comparison-layout-1771097025090/1-navigate-to-issues-page.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-14T19:23:46.511Z"
+        },
+        {
+          "type": "error",
+          "text": "Each child in a list should have a unique \"key\" prop.%s%s See https://react.dev/link/warning-keys for more information. \n\nCheck the render method of `div`.  It was passed a child from IssuesPage.",
+          "timestamp": "2026-02-14T19:23:46.612Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 1,
+      "duration": 3195
+    },
+    {
+      "name": "View issue #1 detail page (top)",
+      "url": "http://localhost:4000/issues/1",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-issue-1-comparison-layout-1771097025090/2-view-issue-1-detail-page-top.png"
+      ],
+      "html": null,
+      "console": [
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+          "timestamp": "2026-02-14T19:23:49.516Z"
+        },
+        {
+          "type": "error",
+          "text": "Each child in a list should have a unique \"key\" prop.%s%s See https://react.dev/link/warning-keys for more information. \n\nCheck the render method of `IssueDetailPage`. ",
+          "timestamp": "2026-02-14T19:23:49.614Z"
+        }
+      ],
+      "errors": [],
+      "consoleErrors": 1,
+      "duration": 3017
+    },
+    {
+      "name": "Scroll to comparison section",
+      "url": "http://localhost:4000/issues/1",
+      "passed": true,
+      "assertions": [],
+      "screenshots": [
+        "run-issue-1-comparison-layout-1771097025090/3-scroll-to-comparison-section.png"
+      ],
+      "html": null,
+      "console": [],
+      "errors": [],
+      "consoleErrors": 0,
+      "duration": 1052
+    }
+  ],
+  "passed": 3,
+  "failed": 0,
+  "totalSteps": 3,
+  "runId": "issue-1-comparison-layout-1771097025090",
+  "screenshotDir": "run-issue-1-comparison-layout-1771097025090",
+  "stoppedEarly": false,
+  "duration": 8222
+}

@@ -1,0 +1,52 @@
+{
+  "name": "Issue #1: improve before/after comparison layout and size visualization",
+  "description": "Test the issue comparison page layout - should show prominent before/after orientation and clear size comparisons",
+  "baseUrl": "http://localhost:4000",
+  "failFast": true,
+  "monitorConsole": false,
+  "playwright": {
+    "headless": true,
+    "timeout": 30000,
+    "viewport": {
+      "width": 1920,
+      "height": 1400
+    }
+  },
+  "steps": [
+    {
+      "name": "View issue #1 with comparison (full height)",
+      "url": "/issues/1",
+      "capture": {
+        "screenshot": true
+      },
+      "primitives": [
+        {
+          "type": "waitForLoadState",
+          "options": {
+            "state": "networkidle"
+          }
+        },
+        {
+          "type": "waitForTimeout",
+          "timeout": 2000
+        }
+      ]
+    },
+    {
+      "name": "Scroll down 800px",
+      "primitives": [
+        {
+          "type": "evaluate",
+          "pageFunction": "window.scrollBy(0, 800)"
+        },
+        {
+          "type": "waitForTimeout",
+          "timeout": 1000
+        }
+      ],
+      "capture": {
+        "screenshot": true
+      }
+    }
+  ]
+}

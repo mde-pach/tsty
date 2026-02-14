@@ -127,6 +127,34 @@ async function main() {
         break;
       }
 
+      case 'analyze-screenshots': {
+        const runId = args[0];
+        if (!runId) {
+          console.error('\x1b[31m❌ Error: Missing run ID\x1b[0m');
+          console.log('\x1b[33m   Usage: tsty analyze-screenshots <run-id>\x1b[0m');
+          console.log('\x1b[33m   Hint: Run "tsty list reports" to see available run IDs\n\x1b[0m');
+          process.exit(1);
+        }
+
+        await commands.analyzeScreenshots(runId, projectRoot);
+        break;
+      }
+
+      case 'compare-runs': {
+        const beforeRun = args[0];
+        const afterRun = args[1];
+
+        if (!beforeRun || !afterRun) {
+          console.error('\x1b[31m❌ Error: Missing run IDs\x1b[0m');
+          console.log('\x1b[33m   Usage: tsty compare-runs <before-run-id> <after-run-id>\x1b[0m');
+          console.log('\x1b[33m   Hint: Run "tsty list reports" to see available run IDs\n\x1b[0m');
+          process.exit(1);
+        }
+
+        await commands.compareRuns(beforeRun, afterRun, projectRoot);
+        break;
+      }
+
       case 'issue': {
         const action = args[0];
 

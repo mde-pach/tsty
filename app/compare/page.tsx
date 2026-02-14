@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { RunComparisonViewer } from "@/dashboard/components/run-comparison-viewer";
 import { LoadingState, Button, Card } from "@/dashboard/components/ui";
 import type { ReportFile, FlowFile } from "@/lib/types";
 
-export default function ComparePage() {
+export const dynamic = 'force-dynamic';
+
+function ComparePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -297,5 +299,13 @@ export default function ComparePage() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={<LoadingState message="Loading comparison..." />}>
+      <ComparePageContent />
+    </Suspense>
   );
 }
