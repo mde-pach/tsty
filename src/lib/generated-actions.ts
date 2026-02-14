@@ -180,7 +180,7 @@ export interface BlurAction extends BaseAction {
 export interface DispatchEventAction extends BaseAction {
   type: 'dispatchEvent';
   selector: string;
-  type: any;
+  eventType: any;
   eventInit: any;
   options?: Record<string, any>;
 }
@@ -487,7 +487,7 @@ export const ACTION_CATEGORIES = {
 
 export function getActionCategory(actionType: ActionType): string {
   for (const [category, methods] of Object.entries(ACTION_CATEGORIES)) {
-    if ((methods as string[]).includes(actionType)) {
+    if ((methods as readonly string[]).includes(actionType)) {
       return category;
     }
   }
@@ -495,7 +495,8 @@ export function getActionCategory(actionType: ActionType): string {
 }
 
 export function getMethodsByCategory(category: string): string[] {
-  return ACTION_CATEGORIES[category as keyof typeof ACTION_CATEGORIES] || [];
+  const methods = ACTION_CATEGORIES[category as keyof typeof ACTION_CATEGORIES];
+  return methods ? [...methods] : [];
 }
 
 export function getAllMethods(): string[] {

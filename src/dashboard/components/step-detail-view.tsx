@@ -317,7 +317,7 @@ export function StepDetailView({
 										key={index}
 										className="px-3 py-2 font-mono text-xs bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded border border-gray-200 dark:border-gray-700"
 									>
-										{log}
+										{typeof log === 'string' ? log : `[${log.type}] ${log.text}`}
 									</div>
 								))}
 							</div>

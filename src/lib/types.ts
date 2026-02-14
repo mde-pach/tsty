@@ -3,6 +3,8 @@
  * Based on .tsty format
  */
 
+import type { Action } from './generated-actions';
+
 // ============================================================================
 // Primitives (Auto-generated from Playwright API)
 // ============================================================================
@@ -103,7 +105,7 @@ export type { Action, ActionType } from './generated-actions';
 export interface ActionDefinition {
   type: 'auth' | 'modal' | 'form' | 'navigation' | 'interaction' | 'data';
   description: string;
-  primitives: Primitive[];  // Building blocks that compose this action
+  primitives: Action[];  // Building blocks that compose this action (Primitive = Action)
   tags?: string[]; // Optional: Tags for organization
   dependencies?: string[]; // Optional: IDs of other actions this depends on
   category?: string; // Optional: Category for organization
@@ -125,9 +127,9 @@ export interface FlowStep {
   name: string;
   url?: string; // Optional: If omitted, stays on current page
   actions?: string[]; // References to action definition files
-  primitives?: Primitive[]; // Inline primitives (alternative to actions)
+  primitives?: Action[]; // Inline primitives (alternative to actions)
   capture?: {
-    screenshot?: boolean;
+    screenshot?: boolean | "always" | "on-failure" | "never"; // Conditional capture
     html?: boolean;
     console?: boolean;
   };
@@ -144,9 +146,12 @@ export interface Flow {
   devices?: ('desktop' | 'mobile')[];
   tags?: string[]; // Optional: Tags for organization
   dependencies?: string[]; // Optional: IDs of flows that must run before this one
+  category?: string; // Optional: Category for organization
   metadata?: Record<string, unknown>; // Optional: Additional metadata
   failFast?: boolean; // Optional: Stop execution on first failed step (default: false)
   monitorConsole?: boolean; // Optional: Monitor console for errors and stop on critical errors (default: true)
+  referenceRunId?: string; // Optional: Run ID to use as comparison baseline
+  issueNumber?: number; // Optional: Linked GitHub issue number
 }
 
 // ============================================================================
@@ -180,6 +185,13 @@ export interface StepResult {
   consoleErrors?: number; // Count of console errors
 }
 
+export interface ComparisonMetadata {
+  referenceRunId: string;
+  referenceTimestamp: string;
+  hasVisualChanges: boolean;
+  changedSteps: number[]; // Indices of steps with visual differences
+}
+
 export interface TestReport {
   flow: string;
   flowId?: string; // Original flow ID (e.g., "onboarding/01-root-page-layout")
@@ -198,6 +210,8 @@ export interface TestReport {
   stopReason?: string; // Reason for early stop (e.g., "Console errors detected", "Navigation failed")
   runId?: string; // Run identifier
   screenshotDir?: string; // Screenshot directory for this run
+  isReference?: boolean; // True if this run is marked as a reference baseline
+  comparedToReference?: ComparisonMetadata; // Comparison data if run was compared to reference
 }
 
 // ============================================================================
@@ -240,6 +254,52 @@ export interface TstyConfig {
     slowMo?: number;
     timeout?: number;
   };
+}
+
+// ============================================================================
+// Progress Event Types
+// ============================================================================
+
+export interface FlowProgressEvent {
+  type: 'start' | 'step_start' | 'step_complete' | 'early_stop' | 'step_error' | 'complete' | 'error';
+  timestamp: string;
+  data: Record<string, unknown>;
+}
+
+// ============================================================================
+// GitHub Issue Types
+// ============================================================================
+
+export interface GitHubIssueLabel {
+  name: string;
+  color: string;
+}
+
+export interface GitHubIssueAuthor {
+  login: string;
+}
+
+export interface GitHubIssue {
+  number: number;
+  title: string;
+  body: string;
+  state: 'open' | 'closed';
+  labels: GitHubIssueLabel[];
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+  closedAt?: string;
+  author: GitHubIssueAuthor;
+  assignees: GitHubIssueAuthor[];
+  milestone?: {
+    title: string;
+  };
+  // Tsty-specific metadata
+  fetchedAt: string;
+  repository: string;
+  linkedFlowId?: string;
+  referenceRunId?: string;
+  status: 'pending' | 'linked' | 'testing' | 'fixed' | 'failed';
 }
 
 // ============================================================================

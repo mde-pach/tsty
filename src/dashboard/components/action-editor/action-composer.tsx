@@ -84,83 +84,83 @@ export function ActionComposer({ onSave }: ActionComposerProps) {
 	};
 
 	const createDefaultAction = (type: ActionType): Action => {
-		const baseAction = { type } as Action;
+		const baseAction = { type } as unknown as Action;
 
 		// Actions that need selector
 		if (["click", "dblclick", "hover", "check", "uncheck", "focus", "blur", "tap"].includes(type)) {
-			return { ...baseAction, selector: "" } as Action;
+			return { ...baseAction, selector: "" } as unknown as Action;
 		}
 
 		// Actions that need selector + value
 		if (["fill", "selectOption"].includes(type)) {
-			return { ...baseAction, selector: "", value: "" } as Action;
+			return { ...baseAction, selector: "", value: "" } as unknown as Action;
 		}
 
 		// Actions that need selector + text
 		if (["type"].includes(type)) {
-			return { ...baseAction, selector: "", text: "" } as Action;
+			return { ...baseAction, selector: "", text: "" } as unknown as Action;
 		}
 
 		// Actions that need key (+ optional selector)
 		if (["press"].includes(type)) {
-			return { ...baseAction, key: "" } as Action;
+			return { ...baseAction, key: "" } as unknown as Action;
 		}
 
 		// Actions that need URL
 		if (["goto", "waitForURL"].includes(type)) {
-			return { ...baseAction, url: "" } as Action;
+			return { ...baseAction, url: "" } as unknown as Action;
 		}
 
 		// Wait actions
 		if (["waitForTimeout"].includes(type)) {
-			return { ...baseAction, timeout: 1000 } as Action;
+			return { ...baseAction, timeout: 1000 } as unknown as Action;
 		}
 
 		if (["waitForSelector"].includes(type)) {
-			return { ...baseAction, selector: "" } as Action;
+			return { ...baseAction, selector: "" } as unknown as Action;
 		}
 
 		if (["waitForLoadState"].includes(type)) {
-			return { ...baseAction, state: "load" } as Action;
+			return { ...baseAction, state: "load" } as unknown as Action;
 		}
 
 		if (["waitForFunction"].includes(type)) {
-			return { ...baseAction, fn: "" } as Action;
+			return { ...baseAction, pageFunction: "", arg: undefined } as unknown as Action;
 		}
 
 		// Screenshot
 		if (["screenshot"].includes(type)) {
-			return { ...baseAction, path: "" } as Action;
+			return { ...baseAction, options: {} } as unknown as Action;
 		}
 
 		// Drag and drop
 		if (["dragAndDrop"].includes(type)) {
-			return { ...baseAction, source: "", target: "" } as Action;
+			return { ...baseAction, source: "", target: "" } as unknown as Action;
 		}
 
 		// Set input files
 		if (["setInputFiles"].includes(type)) {
-			return { ...baseAction, selector: "", files: [] } as Action;
+			return { ...baseAction, selector: "", files: [] } as unknown as Action;
 		}
 
 		// Viewport
 		if (["setViewportSize"].includes(type)) {
-			return { ...baseAction, width: 1920, height: 1080 } as Action;
+			return { ...baseAction, viewportSize: { width: 1920, height: 1080 } } as unknown as Action;
 		}
 
 		// Evaluate
 		if (["evaluate", "evaluateHandle"].includes(type)) {
-			return { ...baseAction, fn: "" } as Action;
+			return { ...baseAction, pageFunction: "", arg: undefined } as unknown as Action;
 		}
 
 		// Locators
 		if (["getByRole", "getByText", "getByLabel", "getByPlaceholder", "getByAltText", "getByTitle", "getByTestId"].includes(type)) {
-			return { ...baseAction, text: "" } as Action;
+			return { ...baseAction, text: "" } as unknown as Action;
 		}
 
 		// Scroll
 		if (["scroll"].includes(type)) {
-			return { ...baseAction, x: 0, y: 0 } as Action;
+			return { ...baseAction, x: 0, y: 0 } as unknown as Action;
 		}
 
 		// Default: return base action

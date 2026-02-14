@@ -144,7 +144,9 @@ export function ReportViewer({ report, onClose }: ReportViewerProps) {
 										<h4 className="font-semibold mb-2">Console Logs</h4>
 										<div className="bg-gray-900 text-gray-100 p-3 rounded text-xs space-y-1 max-h-40 overflow-y-auto">
 											{step.console.map((log, i) => (
-												<div key={i}>{log}</div>
+												<div key={i}>
+													{typeof log === 'string' ? log : `[${log.type}] ${log.text}`}
+												</div>
 											))}
 										</div>
 									</div>

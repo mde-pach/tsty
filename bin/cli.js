@@ -37,15 +37,24 @@ function showHelp() {
   log('  tsty [command] [options]\n', 'reset');
 
   log('Commands:', 'bright');
-  log('  init                 Initialize .tsty directory', 'reset');
-  log('  run <flow-id>        Run a specific flow', 'reset');
-  log('  list [actions]       List user-created actions', 'reset');
-  log('  list flows           List flows', 'reset');
-  log('  list reports         List test reports', 'reset');
-  log('  primitives [cat]     List available primitives (48 building blocks)', 'reset');
-  log('  validate <flow-id>   Validate flow dependencies', 'reset');
-  log('  server               Start the dashboard server (default)', 'reset');
-  log('  --help, -h           Show this help message\n', 'reset');
+  log('  init                       Initialize .tsty directory', 'reset');
+  log('  run <flow-id>              Run a specific flow', 'reset');
+  log('  list [actions]             List user-created actions', 'reset');
+  log('  list flows                 List flows', 'reset');
+  log('  list reports               List test reports', 'reset');
+  log('  primitives [cat]           List available primitives (48 building blocks)', 'reset');
+  log('  validate <flow-id>         Validate flow dependencies', 'reset');
+  log('  mark-reference <run-id>    Mark run as reference for comparison', 'reset');
+  log('  clear-reference <flow>     Clear reference for a flow', 'reset');
+  log('  list-references            List all flows with references', 'reset');
+  log('  analyze-screenshots <run>  Analyze screenshots from a test run', 'reset');
+  log('  compare-runs <before> <after> Compare screenshots between runs', 'reset');
+  log('  issue fetch <number>       Fetch GitHub issue (requires gh CLI)', 'reset');
+  log('  issue list                 List fetched issues', 'reset');
+  log('  issue link <number>        Link issue to flow', 'reset');
+  log('  issue view <number>        View issue details', 'reset');
+  log('  server                     Start the dashboard server (default)', 'reset');
+  log('  --help, -h                 Show this help message\n', 'reset');
 
   log('Primitives vs Actions:', 'bright');
   log('  Primitives = Building blocks (click, fill, type) - framework-provided', 'cyan');
@@ -59,12 +68,16 @@ function showHelp() {
   log('  tsty primitives                # Show 48 primitives', 'cyan');
   log('  tsty primitives mouse          # Show mouse primitives', 'cyan');
   log('  tsty validate checkout-flow', 'cyan');
+  log('  tsty analyze-screenshots run-checkout-1234567  # Analyze test screenshots', 'cyan');
+  log('  tsty compare-runs run-before-111 run-after-222 # Compare before/after', 'cyan');
   log('  tsty server --port 3000\n', 'cyan');
 
   log('Options:', 'bright');
   log('  --device <type>      Device type for run command (desktop|mobile)', 'reset');
   log('  --fail-fast          Stop flow execution on first failed step', 'reset');
   log('  --no-monitor         Disable console error monitoring', 'reset');
+  log('  --mark-reference     Mark this run as reference (use with run command)', 'reset');
+  log('  --flow <flow-id>     Flow ID (use with mark-reference command)', 'reset');
   log('  --port <port>        Port for server (default: 4000)', 'reset');
   log('  --host <host>        Host for server (default: localhost)\n', 'reset');
 }

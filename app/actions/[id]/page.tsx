@@ -77,10 +77,12 @@ export default function ActionDetailPage({ params }: ActionDetailPageProps) {
 	}
 
 	const typeIcons = {
+		auth: "🔐",
 		modal: "🔲",
 		form: "📝",
 		navigation: "🧭",
 		interaction: "👆",
+		data: "📊",
 	};
 
 	return (
@@ -221,7 +223,7 @@ export default function ActionDetailPage({ params }: ActionDetailPageProps) {
 											Fill
 										</Badge>
 									)}
-									{act.type === "wait" && (
+									{(act.type === "waitForLoadState" || act.type === "waitForTimeout" || act.type === "waitForSelector" || act.type === "waitForFunction" || act.type === "waitForURL" || act.type === "waitForEvent") && (
 										<Badge variant="warning" size="sm">
 											Wait
 										</Badge>
@@ -236,7 +238,7 @@ export default function ActionDetailPage({ params }: ActionDetailPageProps) {
 											Type
 										</Badge>
 									)}
-									{act.type === "select" && (
+									{act.type === "selectOption" && (
 										<Badge variant="info" size="sm">
 											Select
 										</Badge>
@@ -290,14 +292,18 @@ export default function ActionDetailPage({ params }: ActionDetailPageProps) {
 											Key: <span className="font-mono">{String(act.key)}</span>
 										</div>
 									)}
-									{"name" in act && act.name && (
-										<div>
-											Name:{" "}
-											<span className="font-mono">{String(act.name)}</span>
-										</div>
+									{"name" in act && (
+										typeof act.name === 'string' && act.name ? (
+											<div>
+												Name:{" "}
+												<span className="font-mono">{act.name}</span>
+											</div>
+										) : null
 									)}
-									{"condition" in act && act.condition && (
-										<div>Condition: {String(act.condition)}</div>
+									{"condition" in act && (
+										act.condition ? (
+											<div>Condition: {String(act.condition)}</div>
+										) : null
 									)}
 									{"duration" in act && act.duration ? (
 										<div>Duration: {String(act.duration)}ms</div>

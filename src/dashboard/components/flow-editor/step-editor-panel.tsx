@@ -144,7 +144,7 @@ export function StepEditorPanel() {
 						<label className="flex items-center">
 							<input
 								type="checkbox"
-								checked={step.capture?.screenshot || false}
+								checked={!!step.capture?.screenshot && step.capture.screenshot !== 'never'}
 								onChange={(e) =>
 									updateStep(selectedStepIndex, {
 										capture: {

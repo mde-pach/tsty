@@ -163,7 +163,7 @@ const ACTION_DESCRIPTIONS: Record<string, string> = {
 // Auto-generate primitive actions from ACTION_CATEGORIES
 const PRIMITIVE_ACTIONS: PrimitiveActionTemplate[] = Object.entries(ACTION_CATEGORIES).flatMap(
 	([category, methods]) =>
-		(methods as string[]).map((method) => ({
+		([...methods] as string[]).map((method) => ({
 			type: method as ActionType,
 			label: method.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase()),
 			description: ACTION_DESCRIPTIONS[method] || `Execute ${method}`,
@@ -229,12 +229,12 @@ function DraggablePrimitiveAction({ template }: DraggablePrimitiveActionProps) {
 		}
 
 		if (["waitForFunction"].includes(type)) {
-			return { ...baseAction, fn: "" } as Action;
+			return { ...baseAction, pageFunction: "", arg: undefined } as Action;
 		}
 
 		// Screenshot
 		if (["screenshot"].includes(type)) {
-			return { ...baseAction, path: "" } as Action;
+			return { ...baseAction, options: { path: "" } } as Action;
 		}
 
 		// Drag and drop
@@ -249,22 +249,17 @@ function DraggablePrimitiveAction({ template }: DraggablePrimitiveActionProps) {
 
 		// Viewport
 		if (["setViewportSize"].includes(type)) {
-			return { ...baseAction, width: 1920, height: 1080 } as Action;
+			return { ...baseAction, viewportSize: { width: 1920, height: 1080 } } as Action;
 		}
 
 		// Evaluate
 		if (["evaluate", "evaluateHandle"].includes(type)) {
-			return { ...baseAction, fn: "" } as Action;
+			return { ...baseAction, pageFunction: "", arg: undefined } as Action;
 		}
 
 		// Locators
 		if (["getByRole", "getByText", "getByLabel", "getByPlaceholder", "getByAltText", "getByTitle", "getByTestId"].includes(type)) {
 			return { ...baseAction, text: "" } as Action;
-		}
-
-		// Scroll
-		if (["scroll"].includes(type)) {
-			return { ...baseAction, x: 0, y: 0 } as Action;
 		}
 
 		// Default: return base action

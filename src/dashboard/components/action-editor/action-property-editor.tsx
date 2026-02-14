@@ -45,8 +45,8 @@ export function ActionPropertyEditor() {
 		updateAction(selectedActionIndex, updates);
 	};
 
-	const renderField = (label: string, field: keyof Action, type = "text", placeholder = "") => {
-		const value = action[field] as string | number | undefined;
+	const renderField = (label: string, field: string, type = "text", placeholder = "") => {
+		const value = (action as any)[field] as string | number | undefined;
 		return (
 			<div>
 				<label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -63,8 +63,8 @@ export function ActionPropertyEditor() {
 		);
 	};
 
-	const renderTextarea = (label: string, field: keyof Action, placeholder = "", rows = 3) => {
-		const value = action[field] as string | undefined;
+	const renderTextarea = (label: string, field: string, placeholder = "", rows = 3) => {
+		const value = (action as any)[field] as string | undefined;
 		return (
 			<div>
 				<label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -81,8 +81,8 @@ export function ActionPropertyEditor() {
 		);
 	};
 
-	const renderSelect = (label: string, field: keyof Action, options: string[]) => {
-		const value = action[field] as string | undefined;
+	const renderSelect = (label: string, field: string, options: string[]) => {
+		const value = (action as any)[field] as string | undefined;
 		return (
 			<div>
 				<label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
