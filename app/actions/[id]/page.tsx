@@ -77,10 +77,12 @@ export default function ActionDetailPage({ params }: ActionDetailPageProps) {
 	}
 
 	const typeIcons = {
+		auth: "🔐",
 		modal: "🔲",
 		form: "📝",
 		navigation: "🧭",
 		interaction: "👆",
+		data: "📊",
 	};
 
 	return (

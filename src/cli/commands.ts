@@ -6,6 +6,8 @@
 import { PlaywrightRunner } from '../runner/playwright-runner';
 import { FileManager } from '../lib/file-manager';
 import { DependencyValidator } from '../lib/dependency-validator';
+import { ReferenceManager } from '../lib/reference-manager';
+import { GitHubIssueManager } from '../lib/github-issue-manager';
 import { loadConfig } from '../lib/config';
 import { ACTION_CATEGORIES } from '../lib/generated-actions';
 import * as fs from 'fs';
@@ -46,6 +48,7 @@ export async function initProject(projectRoot: string = process.cwd()): Promise<
   fs.mkdirSync(path.join(tstyDir, 'flows'), { recursive: true });
   fs.mkdirSync(path.join(tstyDir, 'reports'), { recursive: true });
   fs.mkdirSync(path.join(tstyDir, 'screenshots'), { recursive: true });
+  fs.mkdirSync(path.join(tstyDir, 'issues'), { recursive: true });
 
   // Create default config
   const defaultConfig = {
@@ -73,7 +76,7 @@ export async function runFlow(
   device: 'desktop' | 'mobile' = 'desktop',
   projectRoot?: string,
   options?: { failFast?: boolean; monitorConsole?: boolean }
-): Promise<any> {
+): Promise<string | undefined> {
   log(`\n🧪 Running flow: ${flowId}`, 'cyan');
   log(`   Device: ${device}`, 'blue');
 
@@ -112,7 +115,8 @@ export async function runFlow(
   log(`\n📸 Screenshots saved to: .tsty/screenshots/`, 'cyan');
   log(`📄 Report saved to: .tsty/reports/\n`, 'cyan');
 
-  return report;
+  // Return runId for reference marking
+  return report.runId;
 }
 
 /**
@@ -303,6 +307,250 @@ export async function validateFlow(flowId: string, projectRoot?: string): Promis
     validation.errors.forEach((error) => {
       log(`   ${error}`, 'red');
     });
+    process.exit(1);
+  }
+}
+
+/**
+ * Mark a run as reference for comparison
+ */
+export async function markReference(runId: string, flowId: string | undefined, projectRoot?: string): Promise<void> {
+  const fileManager = new FileManager(projectRoot);
+  const referenceManager = new ReferenceManager(path.join(projectRoot || process.cwd(), '.tsty'));
+
+  // If no flowId provided, try to extract from runId
+  let targetFlowId = flowId;
+
+  if (!targetFlowId) {
+    // Extract flow ID from run ID format: run-{flowId}-{timestamp}
+    const match = runId.match(/^run-(.+)-\d+$/);
+    if (match) {
+      targetFlowId = match[1];
+    } else {
+      log('❌ Could not determine flow ID from run ID', 'red');
+      log('   Usage: tsty mark-reference <run-id> --flow <flow-id>', 'yellow');
+      process.exit(1);
+    }
+  }
+
+  try {
+    await referenceManager.markAsReference(runId, targetFlowId);
+    log(`\n✅ Marked run as reference`, 'green');
+    log(`   Run: ${runId}`, 'cyan');
+    log(`   Flow: ${targetFlowId}`, 'cyan');
+    log(`\n💡 Next steps:`, 'bright');
+    log(`   1. Make code changes`, 'reset');
+    log(`   2. Run: tsty run ${targetFlowId} --compare-to-reference`, 'cyan');
+    log(`   3. View comparison in dashboard\n`, 'reset');
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * Clear reference for a flow
+ */
+export async function clearReference(flowId: string, projectRoot?: string): Promise<void> {
+  const referenceManager = new ReferenceManager(path.join(projectRoot || process.cwd(), '.tsty'));
+
+  try {
+    const currentRef = await referenceManager.getReference(flowId);
+
+    if (!currentRef) {
+      log(`\nℹ️  No reference set for flow: ${flowId}`, 'yellow');
+      return;
+    }
+
+    await referenceManager.clearReference(flowId);
+    log(`\n✅ Cleared reference for flow: ${flowId}`, 'green');
+    log(`   Previous reference: ${currentRef}`, 'cyan');
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * List all flows with references
+ */
+export async function listReferences(projectRoot?: string): Promise<void> {
+  const referenceManager = new ReferenceManager(path.join(projectRoot || process.cwd(), '.tsty'));
+
+  try {
+    const references = await referenceManager.listAllReferences();
+
+    if (references.length === 0) {
+      log('\nℹ️  No references set', 'yellow');
+      log('   Use: tsty mark-reference <run-id> --flow <flow-id>\n', 'cyan');
+      return;
+    }
+
+    log(`\n📌 References (${references.length}):\n`, 'bright');
+    references.forEach((ref) => {
+      log(`  ${ref.flowId}`, 'cyan');
+      log(`    Reference Run: ${ref.referenceRunId}`, 'reset');
+      log(`    Device: ${ref.device}`, 'reset');
+      if (ref.timestamp) {
+        log(`    Captured: ${new Date(ref.timestamp).toLocaleString()}`, 'reset');
+      }
+      log('', 'reset');
+    });
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * Fetch a GitHub issue
+ */
+export async function fetchIssue(issueNumber: number, repo?: string, projectRoot?: string): Promise<void> {
+  const issueManager = new GitHubIssueManager(path.join(projectRoot || process.cwd(), '.tsty/issues'));
+
+  try {
+    // Check if gh CLI is available
+    const hasGh = await issueManager.checkGhCLI();
+    if (!hasGh) {
+      log('\n❌ Error: GitHub CLI (gh) not found or not authenticated', 'red');
+      log('   Install: https://cli.github.com/', 'yellow');
+      log('   Authenticate: gh auth login\n', 'yellow');
+      process.exit(1);
+    }
+
+    // Fetch issue
+    await issueManager.fetchIssue(issueNumber, repo);
+
+    // Success message is printed by the bash script
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * List all fetched issues
+ */
+export async function listIssues(projectRoot?: string): Promise<void> {
+  const issueManager = new GitHubIssueManager(path.join(projectRoot || process.cwd(), '.tsty/issues'));
+
+  try {
+    const issues = await issueManager.listIssues();
+
+    if (issues.length === 0) {
+      log('\nℹ️  No issues fetched yet', 'yellow');
+      log('   Use: tsty issue fetch <number> [--repo owner/repo]\n', 'cyan');
+      return;
+    }
+
+    log(`\n📋 Fetched Issues (${issues.length}):\n`, 'bright');
+    issues.forEach((issue) => {
+      const statusColors = {
+        pending: 'yellow',
+        linked: 'blue',
+        testing: 'cyan',
+        fixed: 'green',
+        failed: 'red',
+      } as const;
+
+      log(`  #${issue.number} - ${issue.title}`, 'cyan');
+      log(`    State: ${issue.state}`, 'reset');
+      log(`    Status: ${issue.status}`, statusColors[issue.status] || 'reset');
+      log(`    Repository: ${issue.repository}`, 'reset');
+      log(`    Fetched: ${new Date(issue.fetchedAt).toLocaleString()}`, 'reset');
+
+      if (issue.linkedFlowId) {
+        log(`    Linked to flow: ${issue.linkedFlowId}`, 'blue');
+      }
+
+      if (issue.labels && issue.labels.length > 0) {
+        log(`    Labels: ${issue.labels.map(l => l.name).join(', ')}`, 'reset');
+      }
+
+      log('', 'reset');
+    });
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * Link issue to flow
+ */
+export async function linkIssueToFlow(issueNumber: number, flowId: string, projectRoot?: string): Promise<void> {
+  const issueManager = new GitHubIssueManager(path.join(projectRoot || process.cwd(), '.tsty/issues'));
+
+  try {
+    await issueManager.linkToFlow(issueNumber, flowId);
+    log(`\n✅ Linked issue #${issueNumber} to flow: ${flowId}`, 'green');
+    log(`   Status updated to: linked`, 'cyan');
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * View issue details
+ */
+export async function viewIssue(issueNumber: number, projectRoot?: string): Promise<void> {
+  const issueManager = new GitHubIssueManager(path.join(projectRoot || process.cwd(), '.tsty/issues'));
+
+  try {
+    const issue = await issueManager.getIssue(issueNumber);
+
+    log(`\n📋 Issue #${issue.number}`, 'bright');
+    log(`   ${issue.title}\n`, 'cyan');
+
+    log('Details:', 'bright');
+    log(`  State: ${issue.state}`, 'reset');
+    log(`  Status: ${issue.status}`, 'reset');
+    log(`  Repository: ${issue.repository}`, 'reset');
+    log(`  URL: ${issue.url}`, 'blue');
+    log(`  Created: ${new Date(issue.createdAt).toLocaleString()}`, 'reset');
+    log(`  Updated: ${new Date(issue.updatedAt).toLocaleString()}`, 'reset');
+
+    if (issue.labels && issue.labels.length > 0) {
+      log(`  Labels: ${issue.labels.map(l => l.name).join(', ')}`, 'reset');
+    }
+
+    if (issue.linkedFlowId) {
+      log(`\n  Linked Flow: ${issue.linkedFlowId}`, 'blue');
+    }
+
+    if (issue.referenceRunId) {
+      log(`  Reference Run: ${issue.referenceRunId}`, 'cyan');
+    }
+
+    if (issue.body) {
+      log('\nDescription:', 'bright');
+      // Truncate body to first 500 chars
+      const body = issue.body.length > 500
+        ? issue.body.substring(0, 500) + '...'
+        : issue.body;
+      log(`  ${body}\n`, 'reset');
+    }
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
+    process.exit(1);
+  }
+}
+
+/**
+ * Set reference run for issue
+ */
+export async function setIssueReference(issueNumber: number, runId: string, projectRoot?: string): Promise<void> {
+  const issueManager = new GitHubIssueManager(path.join(projectRoot || process.cwd(), '.tsty/issues'));
+
+  try {
+    await issueManager.setReferenceRun(issueNumber, runId);
+
+    log(`\n✅ Reference run set for issue #${issueNumber}`, 'green');
+    log(`   Run ID: ${runId}`, 'cyan');
+    log(`   Status: testing\n`, 'reset');
+  } catch (error) {
+    log(`\n❌ Error: ${(error as Error).message}`, 'red');
     process.exit(1);
   }
 }

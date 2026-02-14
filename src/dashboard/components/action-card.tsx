@@ -16,6 +16,11 @@ interface ActionCardProps {
 }
 
 const actionTypeConfig = {
+	auth: {
+		color:
+			"bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800",
+		icon: "🔐",
+	},
 	modal: {
 		color:
 			"bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800",
@@ -35,6 +40,11 @@ const actionTypeConfig = {
 		color:
 			"bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800",
 		icon: "👆",
+	},
+	data: {
+		color:
+			"bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
+		icon: "📊",
 	},
 };
 

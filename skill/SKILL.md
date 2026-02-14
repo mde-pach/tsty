@@ -1,11 +1,11 @@
 ---
 name: tsty
-description: "Autonomous E2E testing framework for iterative visual QA and user flow validation. Creates, executes, and autonomously fixes test flows until passing. Use when asked to: (1) test/verify/validate UI, frontend, web app, or pages; (2) check layout, visual bugs, styling, or design; (3) test accessibility/WCAG/a11y; (4) run E2E/integration/user flow/journey/scenario tests; (5) test form submissions, interactions, or user actions; (6) verify API integrations from frontend; (7) regression test after changes; (8) debug/troubleshoot UI issues; (9) analyze screenshots, console logs, or test reports; (10) automate browser testing with Playwright. Works with ANY tech stack (React, Vue, Next.js, vanilla JS, etc.). CRITICAL: Autonomously iterates (run → analyze → fix code → re-run) until tests pass. Uses micro-iteration (test ONE step at a time) and fail-fast mode for fastest debugging."
+description: "Autonomous E2E testing framework for iterative visual QA, user flow validation, and GitHub issue fixing. AUTONOMOUSLY FIXES GITHUB ISSUES: fetch issue → create test → run → analyze → fix code → verify → mark fixed. Also creates, executes, and autonomously fixes test flows until passing. Use when asked to: (1) fix/handle/resolve GitHub issues; (2) test/verify/validate UI, frontend, web app, or pages; (3) check layout, visual bugs, styling, or design; (4) test accessibility/WCAG/a11y; (5) run E2E/integration/user flow/journey/scenario tests; (6) test form submissions, interactions, or user actions; (7) verify API integrations from frontend; (8) regression test after changes; (9) debug/troubleshoot UI issues; (10) analyze screenshots, console logs, or test reports; (11) automate browser testing with Playwright. Works with ANY tech stack (React, Vue, Next.js, vanilla JS, etc.). CRITICAL: Autonomously iterates (run → analyze → fix code → re-run) until tests pass or issues are fixed. Uses micro-iteration (test ONE step at a time) and fail-fast mode for fastest debugging."
 ---
 
 # Tsty - Iterative Visual QA Testing Skill
 
-**Iterative QA testing framework** that autonomously creates flows, runs tests, analyzes results (screenshots/logs/reports), fixes issues, and re-runs until tests pass.
+**Autonomous E2E testing framework** that creates flows, runs tests, analyzes results, fixes issues, and re-runs until passing. **AUTONOMOUSLY FIXES GITHUB ISSUES** end-to-end: fetch → create test → run → analyze → fix code → verify → mark fixed. Includes before/after screenshot comparison for visual verification.
 
 ## ⚠️ CRITICAL PRINCIPLES (Read These First)
 
@@ -253,7 +253,111 @@ Expected in dev mode:
 
 ---
 
+## 🔄 Autonomous GitHub Issue Fixing
+
+**CRITICAL**: When GitHub issues are mentioned, use **AUTONOMOUS WORKFLOW** - don't just track, actually FIX them.
+
+### Autonomous Workflow (Primary)
+
+**User says:** "Fix issue #42" or "Handle this GitHub issue"
+
+**You autonomously:**
+
+1. **Fetch & Understand**
+   ```bash
+   tsty issue fetch 42 --repo owner/repo
+   ```
+   - Read issue description, labels, comments
+   - Understand what's broken or missing
+
+2. **Create Test Flow Automatically**
+   - Analyze issue to identify affected feature
+   - Write test flow that reproduces the bug
+   - Save to `.tsty/flows/issue-42-<slug>.json`
+   - Link: `tsty issue link 42 --flow issue-42-<slug>`
+
+3. **Run Test to Confirm Issue**
+   ```bash
+   tsty run issue-42-<slug> --fail-fast --no-monitor
+   ```
+   - Test should FAIL (confirming bug exists)
+   - Capture reference: `tsty issue set-reference 42 --run <runId>`
+
+4. **Analyze Failure & Fix Code**
+   - Read test report and screenshots
+   - Identify root cause (missing handler, broken logic, etc.)
+   - Use Edit tool to fix the code
+   - Apply fix to relevant component/page files
+
+5. **Verify Fix Works**
+   ```bash
+   tsty run issue-42-<slug> --fail-fast --no-monitor
+   ```
+   - Test should PASS (issue fixed!)
+   - If fails: iterate (analyze → fix → test) up to 3 times
+
+6. **Mark as Fixed**
+   - Update issue status to 'fixed'
+   - Before/After comparison available in dashboard
+   - Report: "Issue #42 fixed! View comparison at /issues/42"
+
+**→ Complete guide: [AUTONOMOUS-ISSUE-FIXING.md](references/AUTONOMOUS-ISSUE-FIXING.md)**
+
+### When to Use Autonomous Workflow
+
+- ✅ User says "fix issue #X" → Full autonomous workflow
+- ✅ User says "handle this GitHub issue" → Full autonomous workflow
+- ✅ User mentions bug from GitHub → Fetch and offer to fix
+- ⚠️ User says "test issue #X" → Create test but ask before fixing
+- ❌ User just wants to track issues → Use manual workflow below
+
+### Manual Workflow (Fallback)
+
+For cases where autonomous fixing isn't appropriate (e.g., complex architectural changes):
+
+1. Fetch: `tsty issue fetch <number> --repo owner/repo`
+2. Link: `tsty issue link <number> --flow existing-flow`
+3. Reference: `tsty issue set-reference <number> --run <runId>`
+4. View comparison in dashboard at `/issues/<number>`
+
+### Features
+
+**Issue Management:**
+- Fetch issues from any GitHub repo
+- Store locally with tsty-specific metadata
+- Link to test flows for automated verification
+- Track testing timeline (fetch → link → reference → latest)
+
+**Reference Run System:**
+- Mark any test run as a baseline
+- Compare subsequent runs to baseline
+- Stored in flow JSON and report JSON
+- Clear reference when no longer needed
+
+**Visual Comparison:**
+- Side-by-side screenshots (before/after)
+- Blue border for reference, green for current
+- Step selector with changed step indicators
+- Keyboard navigation (← → arrows)
+- "Full Screen" button for detailed comparison
+
+**Use Cases:**
+- Verify bug fixes visually
+- Track feature changes over time
+- Document issue resolution with screenshots
+- Regression detection (did fix break something else?)
+
+**Dashboard Pages:**
+- `/issues` - List all fetched issues
+- `/issues/<number>` - Issue detail with timeline and comparison
+- `/compare` - Full-screen comparison view
+
+---
+
 ## When to Read What
+
+**Working with GitHub issues:**
+- [AUTONOMOUS-ISSUE-FIXING.md](references/AUTONOMOUS-ISSUE-FIXING.md) - ⭐ **PRIMARY WORKFLOW** - Fetch → Test → Fix → Verify
 
 **Starting your first test:**
 - [E2E-TESTING-GUIDE.md](references/E2E-TESTING-GUIDE.md) - HTML-first approach
@@ -294,12 +398,25 @@ tsty init                          # Create .tsty/ directory
 # Running tests (ALWAYS use --fail-fast during development)
 tsty run <flow> --fail-fast        # Stop on first failure (60-78% faster)
 tsty run <flow> --device mobile    # Test on mobile viewport
+tsty run <flow> --mark-reference   # Run and mark as reference baseline
 
 # Listing
 tsty list                          # List flows
 tsty list actions                  # List user actions
 tsty primitives                    # List 48 primitives
 tsty primitives mouse              # List mouse primitives
+
+# Reference Runs (Before/After Comparison)
+tsty mark-reference <runId> [--flow <flowId>]  # Mark run as reference baseline
+tsty clear-reference <flowId>                  # Clear reference for flow
+tsty list-references                           # List all reference runs
+
+# GitHub Issue Integration
+tsty issue fetch <number> [--repo owner/repo]  # Fetch issue from GitHub (via gh CLI)
+tsty issue list                                # List all fetched issues
+tsty issue link <number> --flow <flowId>       # Link issue to test flow
+tsty issue set-reference <number> --run <runId> # Set reference run for issue
+tsty issue view <number>                       # View issue details
 
 # Dashboard
 tsty                               # Start visual dashboard (localhost:4000)
