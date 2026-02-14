@@ -118,16 +118,18 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 #{issue.number} {issue.title}
               </h1>
-              <Badge variant={issue.state === "open" ? "success" : "neutral"}>
+              <Badge variant={issue.state === "OPEN" || issue.state === "open" ? "success" : "neutral"}>
                 {issue.state}
               </Badge>
-              <Badge variant={getStatusColor(issue.status)}>
-                {issue.status}
-              </Badge>
+              {issue.status && (
+                <Badge variant={getStatusColor(issue.status)}>
+                  {issue.status}
+                </Badge>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-              <span>{issue.repository}</span>
+              {issue.repository && <span>{issue.repository}</span>}
               {issue.labels && issue.labels.length > 0 && (
                 <div className="flex items-center gap-2">
                   {issue.labels.map((label) => (
@@ -143,15 +145,17 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
             </div>
           </div>
 
-          <Button
-            onClick={() => window.open(issue.url, "_blank")}
-            variant="secondary"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            View on GitHub
-          </Button>
+          {issue.url && (
+            <Button
+              onClick={() => window.open(issue.url, "_blank")}
+              variant="secondary"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              View on GitHub
+            </Button>
+          )}
         </div>
       </div>
 
@@ -187,9 +191,11 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
                     <span className="font-medium text-gray-900 dark:text-white">
                       Issue Fetched
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(issue.fetchedAt).toLocaleString()}
-                    </span>
+                    {issue.fetchedAt && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(issue.fetchedAt).toLocaleString()}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Issue imported from GitHub
@@ -338,12 +344,14 @@ export default function IssueDetailPage({ params }: IssueDetailPageProps) {
               Metadata
             </h3>
             <div className="space-y-3 text-sm">
-              <div>
-                <span className="text-gray-600 dark:text-gray-400">Author</span>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {issue.author.login}
-                </p>
-              </div>
+              {issue.author && (
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Author</span>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {issue.author.login}
+                  </p>
+                </div>
+              )}
               <div>
                 <span className="text-gray-600 dark:text-gray-400">Created</span>
                 <p className="font-medium text-gray-900 dark:text-white">

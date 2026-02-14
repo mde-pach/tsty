@@ -77,11 +77,16 @@ export function RunComparisonViewer({
       {/* Overview Comparison */}
       <div className="grid md:grid-cols-2 gap-4">
         {/* Reference Run */}
-        <Card>
+        <Card className="border-l-4 border-l-blue-500">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Reference Run
-            </h3>
+            <div>
+              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1">
+                Before
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Reference Run
+              </h3>
+            </div>
             <Badge variant={refPassed ? "success" : "error"}>
               {refPassed ? "Passed" : "Failed"}
             </Badge>
@@ -121,11 +126,16 @@ export function RunComparisonViewer({
         </Card>
 
         {/* Current Run */}
-        <Card>
+        <Card className="border-l-4 border-l-green-500">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Current Run
-            </h3>
+            <div>
+              <div className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide mb-1">
+                After
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Current Run
+              </h3>
+            </div>
             <Badge variant={curPassed ? "success" : "error"}>
               {curPassed ? "Passed" : "Failed"}
             </Badge>
