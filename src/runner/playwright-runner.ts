@@ -488,8 +488,17 @@ export class PlaywrightRunner {
 				}
 			}
 
-			// Capture screenshot
-			if (step.capture?.screenshot) {
+			// Capture screenshot (conditional based on step result)
+			const shouldCaptureScreenshot = (() => {
+				const captureValue = step.capture?.screenshot;
+				if (!captureValue) return false;
+				if (captureValue === true || captureValue === "always") return true;
+				if (captureValue === "never") return false;
+				if (captureValue === "on-failure") return !result.passed;
+				return false;
+			})();
+
+			if (shouldCaptureScreenshot) {
 				// Use step number prefix for easy sorting (e.g., "1-homepage.png", "2-settings.png")
 				const screenshotName = `${stepNumber}-${this.slugify(step.name)}.png`;
 				const screenshotRelPath = path.join(screenshotDir, screenshotName);

@@ -127,7 +127,7 @@ export interface FlowStep {
   actions?: string[]; // References to action definition files
   primitives?: Primitive[]; // Inline primitives (alternative to actions)
   capture?: {
-    screenshot?: boolean;
+    screenshot?: boolean | "always" | "on-failure" | "never"; // Conditional capture
     html?: boolean;
     console?: boolean;
   };
