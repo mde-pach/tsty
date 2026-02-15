@@ -1,7 +1,7 @@
 {
   "type": "navigation",
   "description": "Navigate through multiple pages",
-  "actions": [
+  "primitives": [
     {
       "type": "navigate",
       "url": "${baseUrl}/dashboard"

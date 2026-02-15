@@ -4,15 +4,17 @@ When a user mentions a GitHub issue, don't just track it -- autonomously create 
 
 ## 1. Autonomous Workflow Overview
 
-The full 7-step process:
+The full 8-step process:
 
 1. **Fetch** issue from GitHub
 2. **Store** locally in `.tsty/issues/`
 3. **Pre-flight** -- analyze issue type (bug, feature, UI, interaction)
-4. **Create flow** at `.tsty/flows/issue-{number}-{slug}.json`
-5. **Run reference** with `--issue` flag -- automatically links flow to issue and sets reference run
-6. **Analyze & Fix** -- read ALL screenshots, identify root cause, apply code changes
-7. **Re-run & Compare** -- run again with `--issue` flag, read screenshots from BOTH runs, verify improvement
+4. **Create flow** at `.tsty/flows/issue-{number}-{slug}.json` -- use reusable actions (e.g., `"actions": ["login"]`) instead of inlining common sequences
+5. **Validate flow** (no `--issue` flag) -- run to verify selectors and navigation work correctly. Fix any flow issues (wrong URL, broken selectors) and re-run until screenshots show the actual buggy page.
+6. **Set reference** with `--issue` flag -- once the bug is visually confirmed in screenshots, run with `--issue` to link the flow and set the reference run
+7. **Analyze & Fix** -- read ALL screenshots, identify root cause, apply code changes
+8. **Re-run & Compare** -- run again with `--issue` flag, read screenshots from BOTH runs, verify improvement
+9. **Tag** -- add the `maybe-fixed` label: `gh issue edit <number> --add-label maybe-fixed`. Do NOT close or comment on the issue. Summarize the fix and visual verification results to the user
 
 ## 2. Phase 1: Fetch & Understand
 
@@ -21,6 +23,25 @@ gh issue view <number> --repo <owner/repo> --json title,body,labels,number
 ```
 
 Save output to `.tsty/issues/<number>.json`.
+
+### Download issue screenshots
+
+If the issue body contains image URLs (common in bug reports), download and read them:
+
+1. **Extract image URLs** from the issue body (look for `![...](...)`  markdown images or `<img src="...">` HTML tags)
+2. **Download** each image with authentication (GitHub-hosted images return 404 without it):
+   ```bash
+   curl -sL -H "Authorization: token $(gh auth token)" "<image-url>" -o .tsty/issues/<number>-1.png
+   curl -sL -H "Authorization: token $(gh auth token)" "<image-url>" -o .tsty/issues/<number>-2.png
+   ```
+3. **Read the images** visually using the Read tool to understand exactly what the bug looks like
+
+These screenshots are often the most precise description of the bug — they show exactly what's wrong and where on the page. Use them to:
+- Identify the affected page/component
+- Understand the visual symptom (layout issue, wrong data, missing element, etc.)
+- Write more accurate flow selectors targeting the right area
+
+### Classify the issue
 
 Read the saved file and classify the issue:
 - **Bug report** -- create test that reproduces the bug
@@ -33,6 +54,8 @@ Read the saved file and classify the issue:
 **Naming convention:** `issue-{number}-{slug}.json`
 **Location:** `.tsty/flows/issue-{number}-{slug}.json`
 
+**Use reusable actions** for common sequences like login. Create actions in `.tsty/actions/` (e.g., `login.action.json`) and reference them with `"actions": ["login"]` in steps.
+
 Template:
 
 ```json
@@ -44,9 +67,20 @@ Template:
   "monitorConsole": false,
   "steps": [
     {
+      "name": "Login",
+      "url": "/login",
+      "actions": ["login"],
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } }
+      ]
+    },
+    {
       "name": "Navigate to affected page",
       "url": "/path",
-      "capture": { "screenshot": true }
+      "capture": { "screenshot": true },
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } }
+      ]
     },
     {
       "name": "Reproduce the issue",
@@ -56,13 +90,6 @@ Template:
         { "type": "waitForTimeout", "timeout": 1000 }
       ],
       "capture": { "screenshot": true }
-    },
-    {
-      "name": "Verify expected behavior",
-      "capture": { "screenshot": true },
-      "assertions": [
-        { "type": "visible", "selector": "text=Success" }
-      ]
     }
   ]
 }
@@ -70,9 +97,26 @@ Template:
 
 Always set `failFast: true` and `monitorConsole: false` for issue flows.
 
-## 4. Phase 3: Run with --issue flag (auto-links + sets reference)
+**Selector discovery tip**: If unsure about selectors, add `"capture": { "html": true, "screenshot": true }` on the navigation step first, run the flow, then read the captured HTML to find correct selectors before adding interaction steps.
 
-The `--issue` flag automates linking and reference marking in a single command:
+## 4. Phase 3: Validate Flow (no --issue flag)
+
+**First, validate that the flow reaches the correct page and selectors work.** Do NOT use `--issue` yet:
+
+```bash
+tsty run issue-{number}-{slug} --fail-fast --no-monitor
+```
+
+Check screenshots to verify:
+- The flow navigated to the correct page (not a 404 or error page)
+- Selectors matched the expected elements
+- The buggy behavior is visible in screenshots
+
+If the flow has issues (wrong URL, broken selectors), fix the flow JSON and re-run until it reliably reaches the buggy page.
+
+## 5. Phase 4: Set Reference Run (with --issue flag)
+
+**Once the bug is visually confirmed** in screenshots, set the reference:
 
 ```bash
 tsty run issue-{number}-{slug} --fail-fast --no-monitor --issue {number}
@@ -82,7 +126,7 @@ This automatically:
 1. **Links** the flow to the issue (`linkedFlowId` + `status: linked`)
 2. **Sets the reference run** (`referenceRunId` + `status: testing`)
 
-No manual JSON editing needed. The CLI output will confirm:
+The CLI output will confirm:
 
 ```
 🔗 Auto-linked issue #42 to flow: issue-42-checkout-submit
@@ -91,18 +135,11 @@ No manual JSON editing needed. The CLI output will confirm:
    Next: fix the code, then re-run to compare before/after
 ```
 
-**Expected:** Test should FAIL (confirming the issue exists).
+**CRITICAL**: This step MUST happen BEFORE any code changes. The reference run captures the bug as-is. If you already fixed the code, there's no "before" to compare against.
 
-If test passes:
-- Check screenshots -- do they actually show the issue?
-- Re-analyze issue description and adjust the flow
-- Re-run
+> **Manual alternative**: You can also use `--mark-reference` to mark any previous run as the reference, or use `tsty issue link` and `tsty issue set-reference` separately.
 
-If test fails: issue confirmed. Proceed to Phase 4.
-
-> **Manual alternative**: You can still link and set reference separately with `tsty issue link` and `tsty issue set-reference` if needed.
-
-## 5. Phase 4: Analyze & Fix
+## 6. Phase 5: Analyze & Fix
 
 ### Read screenshots (mandatory, do not skip)
 
@@ -132,7 +169,7 @@ Based on visual + technical analysis, identify the affected files and apply fixe
 
 Iterate if needed: fix, re-run, analyze, fix again (up to 3 attempts).
 
-## 6. Phase 5: Verify Fix
+## 7. Phase 6: Verify Fix
 
 ### Re-run
 
@@ -175,7 +212,7 @@ Read .tsty/screenshots/<newRunId>/1-step-name.png
 
 **If still fails:** Analyze failure, apply additional fixes, re-run.
 
-## 7. Issue Status Progression
+## 8. Issue Status Progression
 
 | Status | Meaning | Fields Set |
 |---|---|---|
@@ -183,18 +220,18 @@ Read .tsty/screenshots/<newRunId>/1-step-name.png
 | `linked` | Linked to test flow, no reference run | + `linkedFlowId` |
 | `testing` | Reference run captured, actively testing | + `referenceRunId` |
 
-## 8. Decision Tree
+## 9. Decision Tree
 
 **User says "fix issue #X":**
-Full workflow -- fetch, create flow, run with `--issue X` (auto-links + sets reference), analyze, fix, re-run with `--issue X`, compare.
+Full workflow -- fetch, create flow, validate flow (no `--issue`), set reference (`--issue X`), analyze, fix, re-run (`--issue X`), compare.
 
 **User says "test issue #X":**
-Partial workflow -- fetch, create flow, run with `--issue X`, analyze. Stop before fixing.
+Partial workflow -- fetch, create flow, validate, run with `--issue X`, analyze. Stop before fixing.
 
 **User says "fetch issue #X":**
 Fetch only, then ask: "Should I also create a test flow and attempt to fix it?"
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 ### No comparison data on issue page
 

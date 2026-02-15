@@ -58,19 +58,92 @@ CREATE flow/action → RUN (tsty run X --fail-fast) → ANALYZE screenshots
 
 When asked to fix a GitHub issue, follow the full autonomous workflow:
 
-1. **Fetch**: `gh issue view <number> --repo owner/repo --json title,body,labels,number` → save to `.tsty/issues/<number>.json`
-2. **Create flow**: `.tsty/flows/issue-{number}-{slug}.json` targeting the affected page
-3. **Run reference**: `tsty run issue-N-slug --fail-fast --no-monitor --issue <number>` — the `--issue` flag **automatically** links the flow to the issue and sets the reference run (no manual JSON editing needed)
-4. **Analyze**: Read ALL screenshots from `.tsty/screenshots/<runId>/` → identify root cause
-5. **Fix code**: Edit application files based on visual + technical analysis
-6. **Re-run & compare**: `tsty run issue-N-slug --fail-fast --no-monitor --issue <number>` → on subsequent runs, the CLI detects the reference already exists and tells you to compare before/after
-7. **Close**: `gh issue close <number> --comment "Fixed! Visual verification confirms improvement."`
+1. **Fetch**: `gh issue view <number> --repo owner/repo --json title,body,labels,number` → save to `.tsty/issues/<number>.json`. If the issue body contains image URLs (screenshots of the bug), download them with auth: `curl -sL -H "Authorization: token $(gh auth token)" "<url>" -o .tsty/issues/<number>-<index>.png` (GitHub-hosted images return 404 without authentication). Read them visually to understand the bug before creating the flow.
+2. **Create flow**: `.tsty/flows/issue-{number}-{slug}.json` targeting the affected page. Use reusable actions (e.g., `"actions": ["login"]`) instead of inlining common sequences — see [Reusable Actions](#reusable-actions).
+3. **Validate flow** (no `--issue` flag): `tsty run issue-N-slug --fail-fast --no-monitor` — verify the flow reaches the correct page and selectors work. If the flow hits a wrong URL or broken selectors, fix the flow first and re-run until screenshots show the actual buggy page.
+4. **Set reference**: Once screenshots clearly show the bug, mark this run as the reference: `tsty run issue-N-slug --fail-fast --no-monitor --issue <number>`. The `--issue` flag links the flow to the issue and sets the reference run.
+5. **Analyze**: Read ALL screenshots from `.tsty/screenshots/<runId>/` → identify root cause
+6. **Fix code**: Edit application files based on visual + technical analysis
+7. **Re-run & compare**: `tsty run issue-N-slug --fail-fast --no-monitor --issue <number>` → on subsequent runs, the CLI detects the reference already exists and tells you to compare before/after
+8. **Tag**: Add the `maybe-fixed` label to the issue: `gh issue edit <number> --add-label maybe-fixed`. Do NOT close or comment on the issue. Summarize the fix and visual verification results to the user.
 
-**The `--issue` flag handles linking automatically**: on first run it links the flow and sets the reference run. On subsequent runs it's a no-op (comparison data is already set up). The before/after comparison is then available on the dashboard at `/issues/<number>`.
+**CRITICAL: Steps 3-4 MUST happen BEFORE any code changes.** The reference run must capture the bug as it exists in the codebase. If you fix code first and then create the flow, there's no "before" screenshot to compare against.
 
 **Flow naming**: `issue-{number}-{2-4 word slug}` (e.g., `issue-42-checkout-submit.json`)
 
 > Complete workflow: [github-issues.md](references/github-issues.md)
+
+## Reusable Actions
+
+**ALWAYS use reusable actions for repeated sequences** (login, navigation patterns, common form interactions). Actions live in `.tsty/actions/` as `.action.json` files and are referenced by name in flow steps.
+
+**Login action** — Create once, use in every authenticated flow:
+
+`.tsty/actions/login.action.json`:
+```json
+{
+  "type": "auth",
+  "description": "Login using credentials from config",
+  "primitives": [
+    { "type": "fill", "selector": "input[name='email']", "value": "${credentials.email}" },
+    { "type": "fill", "selector": "input[name='password']", "value": "${credentials.password}" },
+    { "type": "click", "selector": "button[type='submit']" },
+    { "type": "waitForTimeout", "timeout": 5000 }
+  ]
+}
+```
+
+**Using actions in flows:**
+```json
+{
+  "steps": [
+    {
+      "name": "Login",
+      "url": "/login",
+      "actions": ["login"],
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } }
+      ]
+    },
+    {
+      "name": "Navigate to affected page",
+      "url": "/target-page",
+      "capture": { "screenshot": true }
+    }
+  ]
+}
+```
+
+This replaces 15+ lines of duplicated login primitives with a single `"actions": ["login"]` reference. Credentials come from `.tsty/config.json`.
+
+```bash
+tsty list actions    # List all available actions
+```
+
+> See [examples.md](references/examples.md) for more action patterns.
+
+## Selector Discovery with HTML Capture
+
+When building a new flow and unsure about selectors, **capture the page HTML first** to inspect the actual DOM:
+
+```json
+{
+  "steps": [
+    {
+      "name": "Discover page structure",
+      "url": "/target-page",
+      "capture": { "html": true, "screenshot": true },
+      "primitives": [
+        { "type": "waitForLoadState", "options": { "state": "networkidle" } }
+      ]
+    }
+  ]
+}
+```
+
+After running, read the captured HTML from the report to find correct selectors (element IDs, text content, ARIA labels, data attributes). Then update the flow with validated selectors.
+
+This avoids trial-and-error with guessed selectors that waste runs.
 
 ## Flow Structure
 

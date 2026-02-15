@@ -1,7 +1,7 @@
 {
   "type": "interaction",
   "description": "Select option from dropdown",
-  "actions": [
+  "primitives": [
     {
       "type": "navigate",
       "url": "${targetUrl}"

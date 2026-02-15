@@ -277,7 +277,7 @@ Categories include:
 {
   "type": "form",
   "description": "Fill registration form with dynamic data",
-  "actions": [
+  "primitives": [
     { "type": "fill", "selector": "#name", "value": "${faker.person.fullName}" },
     { "type": "fill", "selector": "#email", "value": "${faker.internet.email}" },
     { "type": "fill", "selector": "#phone", "value": "${faker.phone.number}" }

@@ -158,7 +158,7 @@ tsty run accessibility-check
 {
   "type": "auth",
   "description": "Perform login with credentials from config",
-  "actions": [
+  "primitives": [
     { "type": "fill", "selector": "input[name='email']", "value": "${credentials.email}" },
     { "type": "fill", "selector": "input[name='password']", "value": "${credentials.password}" },
     { "type": "click", "selector": "button[type='submit']" },
@@ -416,7 +416,7 @@ tsty run responsive-test --device mobile
 {
   "type": "form",
   "description": "Fill registration form with dynamic data",
-  "actions": [
+  "primitives": [
     { "type": "fill", "selector": "#firstName", "value": "${faker.person.firstName}" },
     { "type": "fill", "selector": "#lastName", "value": "${faker.person.lastName}" },
     { "type": "fill", "selector": "#email", "value": "${faker.internet.email}" },

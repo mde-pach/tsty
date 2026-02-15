@@ -34,7 +34,7 @@ These example actions demonstrate the capabilities of the action system. They ar
 {
   "type": "modal|filter|form|authentication|navigation|interaction",
   "description": "What this action does",
-  "actions": [
+  "primitives": [
     {
       "type": "navigate|click|fill|type|wait|...",
       "selector": "CSS selector or Playwright selector",

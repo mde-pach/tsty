@@ -1,7 +1,7 @@
 {
   "type": "modal",
   "description": "Open a create item modal",
-  "actions": [
+  "primitives": [
     {
       "type": "navigate",
       "url": "${targetUrl}"

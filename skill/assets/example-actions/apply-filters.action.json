@@ -1,7 +1,7 @@
 {
   "type": "filter",
   "description": "Apply filters to a list view",
-  "actions": [
+  "primitives": [
     {
       "type": "navigate",
       "url": "${targetUrl}"
