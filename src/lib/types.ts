@@ -171,6 +171,12 @@ export interface ConsoleMessage {
   timestamp: string;
 }
 
+export interface EvaluateResult {
+  pageFunction: string;
+  result: unknown;
+  timestamp: string;
+}
+
 export interface StepResult {
   name: string;
   url: string;
@@ -183,6 +189,7 @@ export interface StepResult {
   errors: string[];
   navigationFailed?: boolean; // Flag if expected URL navigation didn't occur
   consoleErrors?: number; // Count of console errors
+  evaluateResults?: EvaluateResult[]; // Return values from evaluate primitives
 }
 
 export interface ComparisonMetadata {

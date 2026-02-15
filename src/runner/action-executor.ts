@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { Action, ActionType } from '../lib/types';
+import { Action, ActionType, EvaluateResult } from '../lib/types';
 import { interpolateAction, InterpolationContext } from '../lib/variable-interpolator';
 
 /**
@@ -10,14 +10,14 @@ export async function executeAction(
   page: Page,
   action: Action,
   context: InterpolationContext = {}
-): Promise<void> {
+): Promise<EvaluateResult | undefined> {
   // Interpolate variables in the action
   const interpolatedAction = interpolateAction(action, context);
   const actionType = interpolatedAction.type;
 
   // Special handling for screenshot (handled by runner)
   if (actionType === 'screenshot') {
-    return;
+    return undefined;
   }
 
   // Check if the method exists on Page
@@ -31,7 +31,18 @@ export async function executeAction(
 
   // Call the Playwright method dynamically
   try {
-    await pageMethod.apply(page, args);
+    const result = await pageMethod.apply(page, args);
+
+    // Capture return value for evaluate primitives
+    if (actionType === 'evaluate') {
+      return {
+        pageFunction: String((interpolatedAction as any).pageFunction),
+        result,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    return undefined;
   } catch (error) {
     throw new Error(
       `Failed to execute action "${actionType}": ${(error as Error).message}`
@@ -269,13 +280,19 @@ function buildMethodArgs(action: Action): any[] {
 
 /**
  * Execute a sequence of actions
+ * Returns any evaluate results captured during execution
  */
 export async function executeActions(
   page: Page,
   actions: Action[],
   context: InterpolationContext = {}
-): Promise<void> {
+): Promise<EvaluateResult[]> {
+  const evaluateResults: EvaluateResult[] = [];
   for (const action of actions) {
-    await executeAction(page, action, context);
+    const result = await executeAction(page, action, context);
+    if (result) {
+      evaluateResults.push(result);
+    }
   }
+  return evaluateResults;
 }

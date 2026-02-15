@@ -12,6 +12,7 @@ import { FileManager } from "../lib/file-manager";
 import {
 	ActionDefinition,
 	type AssertionResult,
+	type EvaluateResult,
 	type Flow,
 	type FlowAssertion,
 	type StepResult,
@@ -457,7 +458,13 @@ export class PlaywrightRunner {
 						},
 					};
 
-					await executeActions(this.page, step.primitives, context);
+					const evalResults = await executeActions(this.page, step.primitives, context);
+					if (evalResults.length > 0) {
+						result.evaluateResults = [
+							...(result.evaluateResults || []),
+							...evalResults,
+						];
+					}
 				} catch (error) {
 					result.errors.push(`Primitive execution failed: ${String(error)}`);
 					result.passed = false;
@@ -468,7 +475,13 @@ export class PlaywrightRunner {
 			if (step.actions && step.actions.length > 0) {
 				for (const actionId of step.actions) {
 					try {
-						await this.executeAction(actionId);
+						const evalResults = await this.executeActionById(actionId);
+						if (evalResults.length > 0) {
+							result.evaluateResults = [
+								...(result.evaluateResults || []),
+								...evalResults,
+							];
+						}
 					} catch (error) {
 						result.errors.push(`Action "${actionId}" failed: ${String(error)}`);
 						result.passed = false;
@@ -537,7 +550,7 @@ export class PlaywrightRunner {
 	/**
 	 * Execute an action by loading its definition
 	 */
-	private async executeAction(actionId: string): Promise<void> {
+	private async executeActionById(actionId: string): Promise<EvaluateResult[]> {
 		if (!this.page) {
 			throw new Error("Browser not initialized");
 		}
@@ -555,7 +568,7 @@ export class PlaywrightRunner {
 			},
 		};
 
-		await executeActions(this.page, actionFile.definition.primitives, context);
+		return executeActions(this.page, actionFile.definition.primitives, context);
 	}
 
 	/**
