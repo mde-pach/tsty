@@ -19,10 +19,21 @@ async function main() {
 
       case 'run': {
         const flowId = args[0];
-        if (!flowId) {
-          console.error('\x1b[31m❌ Error: Missing flow ID\x1b[0m');
-          console.log('\x1b[33m   Usage: tsty run <flow-id> [--device mobile] [--fail-fast] [--no-monitor] [--mark-reference] [--issue <number>]\n\x1b[0m');
-          process.exit(1);
+        if (!flowId || flowId === '--help' || flowId === '-h') {
+          console.log('\x1b[1m\nUsage:\x1b[0m tsty run <flow-id> [options]\n');
+          console.log('\x1b[1mOptions:\x1b[0m');
+          console.log('  --device <type>      Device type (desktop|mobile)');
+          console.log('  --fail-fast          Stop on first failed step');
+          console.log('  --no-monitor         Disable console error monitoring');
+          console.log('  --mark-reference     Mark this run as reference');
+          console.log('  --issue <number>     Auto-link flow to issue + set reference on first run');
+          console.log('\n\x1b[1mExamples:\x1b[0m');
+          console.log('\x1b[36m  tsty run checkout-flow\x1b[0m');
+          console.log('\x1b[36m  tsty run checkout-flow --device mobile\x1b[0m');
+          console.log('\x1b[36m  tsty run checkout-flow --fail-fast\x1b[0m');
+          console.log('\x1b[36m  tsty run checkout-flow --issue 42 --fail-fast\x1b[0m');
+          console.log('');
+          process.exit(0);
         }
 
         const deviceIndex = args.indexOf('--device');
